@@ -174,7 +174,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
                        cl->buf->start, cl->buf->pos,
                        cl->buf->last - cl->buf->pos,
                        cl->buf->file_pos,
-                       cl->buf->file_last - cl->buf->file_pos, cl->buf->start);
+                       cl->buf->file_last - cl->buf->file_pos, cl->buf->pos);
 	}
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
