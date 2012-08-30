@@ -166,7 +166,16 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
     ngx_log_debug3(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter: l:%d f:%d s:%O", last, flush, size);
-
+	for (cl = r->out; cl; cl = cl->next) {
+		 ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
+                       "my write new buf t:%d f:%d %p, pos %p, size: %z "
+                       "file: %O, size: %z",
+                       cl->buf->temporary, cl->buf->in_file,
+                       cl->buf->start, cl->buf->pos,
+                       cl->buf->last - cl->buf->pos,
+                       cl->buf->file_pos,
+                       cl->buf->file_last - cl->buf->file_pos);
+	}
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
     /*
