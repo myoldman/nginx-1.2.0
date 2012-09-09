@@ -55,6 +55,7 @@ ngx_module_t  ngx_emp_server_module = {
 static char *
 ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
+	printf("called:ngx_log_servers_block\n");
     char                 *rv;
     void               ***ctx;
     ngx_uint_t            i;
@@ -133,7 +134,7 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 static char *
 ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-
+	printf("called:ngx_log_servers_server\n");
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
     ngx_url_t                    u;
