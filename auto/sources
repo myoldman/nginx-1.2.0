@@ -67,7 +67,7 @@ CORE_SRCS="src/core/nginx.c \
            src/core/ngx_conf_file.c \
            src/core/ngx_resolver.c \
            src/core/ngx_open_file_cache.c \
-           src/core/ngx_emp_server.c \
+           src/core/nginx_emp_server.c \
            src/core/ngx_crypt.c"
 
 
