@@ -179,6 +179,8 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 static void *
 ngx_emp_server_create_conf(ngx_cycle_t *cycle)
 {
+	printf("called:ngx_emp_server_create_conf\n");
+
     ngx_emp_server_conf_t  *escf;
 
     escf = ngx_palloc(cycle->pool, sizeof(ngx_emp_server_conf_t));
@@ -197,6 +199,7 @@ ngx_emp_server_create_conf(ngx_cycle_t *cycle)
 
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf)
 {
+	printf("called:ngx_emp_server_init_conf\n");
 	return NGX_CONF_OK;
 }
 
