@@ -59,7 +59,7 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     void               ***ctx;
     ngx_uint_t            i;
     ngx_conf_t            pcf;
-    ngx_event_module_t   *m;
+    ngx_emp_server_module   *m;
 
     /* count the number of the event modules and set up their indices */
 
@@ -135,14 +135,13 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
 
 	ngx_emp_server_conf_t  *escf = conf;
-    ngx_str_t                   *value, s;
+    ngx_str_t                   *value;
     ngx_url_t                    u;
-    ngx_uint_t                   i;
     ngx_addr_t  *addr;
 
     if (escf->servers == NULL) {
         escf->servers = ngx_array_create(cf->pool, 4,
-                                         sizeof(ngx_http_upstream_server_t));
+                                         sizeof(ngx_addr_t));
         if (escf->servers == NULL) {
             return NGX_CONF_ERROR;
         }
@@ -187,11 +186,11 @@ ngx_emp_server_create_conf(ngx_cycle_t *cycle)
         return NULL;
     }
 
-	escf->servers = ngx_array_create(cycle->pool, 1,
-                                         sizeof(ngx_addr_t));
-    if (escf->servers == NULL) {
-            return NULL;
-    }
+	//escf->servers = ngx_array_create(cycle->pool, 1,
+    //                                     sizeof(ngx_addr_t));
+    //if (escf->servers == NULL) {
+    //        return NULL;
+    //}
 	
     return escf;
 }
