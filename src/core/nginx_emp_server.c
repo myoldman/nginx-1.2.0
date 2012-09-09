@@ -31,7 +31,7 @@ static ngx_command_t  ngx_emp_server_commands[] = {
 
 
 static ngx_core_module_t  ngx_emp_server_module_ctx = {
-    ngx_string("emp_server"),
+    ngx_string("log_servers"),
     ngx_emp_server_create_conf,
     ngx_emp_server_init_conf
 };
