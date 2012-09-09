@@ -1,5 +1,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
+#include <nginx_emp_server.h>
+
 
 static ngx_uint_t     ngx_emp_server_max_module;
 static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
