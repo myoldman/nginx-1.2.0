@@ -13,7 +13,7 @@ static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf);
 static ngx_command_t  ngx_emp_server_commands[] = {
 
     { ngx_string("log_servers"),
-      NGX_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_TAKE1,
+      NGX_MAIN_CONF|NGX_CONF_BLOCK|NGX_CONF_NOARGS,
       ngx_log_servers_block,
       0,
       0,
