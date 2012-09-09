@@ -181,11 +181,6 @@ static void *
 ngx_emp_server_create_conf(ngx_cycle_t *cycle)
 {
 	printf("called:ngx_emp_server_create_conf\n");
-    if (ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module) == NULL) {
-        ngx_log_error(NGX_LOG_EMERG, cycle->log, 0,
-                      "no \"log_servers\" section in configuration");
-        return NGX_CONF_ERROR;
-    }
 
     ngx_emp_server_conf_t  *escf;
 
@@ -206,6 +201,11 @@ ngx_emp_server_create_conf(ngx_cycle_t *cycle)
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf)
 {
 	printf("called:ngx_emp_server_init_conf\n");
+	if (ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module) == NULL) {
+        ngx_log_error(NGX_LOG_EMERG, cycle->log, 0,
+                      "no \"log_servers\" section in configuration");
+        return NGX_CONF_ERROR;
+    }
 	return NGX_CONF_OK;
 }
 
