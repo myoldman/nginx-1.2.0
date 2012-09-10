@@ -268,12 +268,6 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
             }
 
             emp_server_module = ngx_modules[i]->ctx;
-
-            if (ngx_strcmp(emp_server_module->name->data, emp_server_core_name.data) == 0)
-            {
-                continue;
-            }
-
             module = ngx_modules[i];
             break;
         }
