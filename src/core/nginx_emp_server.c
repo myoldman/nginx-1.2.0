@@ -295,11 +295,11 @@ ngx_emp_server_module_init(ngx_cycle_t *cycle)
 {
 	printf("called:ngx_emp_server_module_init\n");
     void              ***cf;
-    u_char              *shared;
-    size_t               size, cl;
-    ngx_shm_t            shm;
-    ngx_time_t          *tp;
-    ngx_core_conf_t     *ccf;
+    //u_char              *shared;
+    //size_t               size, cl;
+    //ngx_shm_t            shm;
+    //ngx_time_t          *tp;
+    //ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
 
     cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
@@ -317,13 +317,13 @@ static ngx_int_t
 ngx_emp_server_process_init(ngx_cycle_t *cycle)
 {
 	printf("called:ngx_emp_server_process_init\n");
-    ngx_uint_t           m, i;
-    ngx_event_t         *rev, *wev;
-    ngx_listening_t     *ls;
-    ngx_connection_t    *c, *next, *old;
+    //ngx_uint_t           m, i;
+    //ngx_event_t         *rev, *wev;
+    //ngx_listening_t     *ls;
+    //ngx_connection_t    *c, *next, *old;
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
-    ngx_emp_server_module_t  *module;
+    //ngx_emp_server_module_t  *module;
 
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
