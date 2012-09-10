@@ -274,7 +274,7 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
         ngx_log_error(NGX_LOG_EMERG, cycle->log, 0, "no emp_server module found");
         return NGX_CONF_ERROR;
     }
-	printf("called:ngx_emp_server_core_init_conf %p\n", emp_server_module_temp);
+	printf("called:ngx_emp_server_core_init_conf %p\n", emp_server_module_temp->name->data);
     ngx_conf_init_ptr_value(ecf->name, emp_server_module_temp->name->data);
 	printf("called:ngx_emp_server_core_init_conf OK\n");
     return NGX_CONF_OK;
