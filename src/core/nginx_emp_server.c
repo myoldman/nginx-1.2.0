@@ -288,13 +288,14 @@ static ngx_int_t
 ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 {
 	printf("called:ngx_emp_server_module_init\n");
-    void              ***cf;
+    ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
 
-    cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
-    ecf = (*cf)[ngx_emp_server_core_module.ctx_index];
+    ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
+    ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
-	printf("cf is %p, ecf is %p", cf, ecf);
+
+	printf("ccf is %p, ecf is %p", ccf, ecf);
 		
     if (!ngx_test_config && ngx_process <= NGX_PROCESS_MASTER) {
         ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
