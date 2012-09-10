@@ -169,7 +169,7 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             }
         }
     }
-
+	printf("called:ngx_log_servers_block OK\n");
     return NGX_CONF_OK;
 }
 
