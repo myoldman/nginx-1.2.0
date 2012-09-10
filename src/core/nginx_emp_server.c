@@ -256,17 +256,16 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
 
     ngx_int_t            i;
     ngx_module_t        *module;
-    ngx_emp_server_module_t  *emp_server_module;
+    ngx_emp_server_module_t  *emp_server_module_temp;
 
     module = NULL;
 
     for (i = 0; ngx_modules[i]; i++) {
-
      	if (ngx_modules[i]->type != NGX_EMP_SERVER_MODULE) {
             continue;
         }
 
-        emp_server_module = ngx_modules[i]->ctx;
+        emp_server_module_temp = ngx_modules[i]->ctx;
         module = ngx_modules[i];
         break;
     }
@@ -276,7 +275,7 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
         return NGX_CONF_ERROR;
     }
 	
-    ngx_conf_init_ptr_value(ecf->name, emp_server_module->name->data);
+    ngx_conf_init_ptr_value(ecf->name, emp_server_module_temp->name->data);
 	printf("called:ngx_emp_server_core_init_conf OK\n");
     return NGX_CONF_OK;
 }
