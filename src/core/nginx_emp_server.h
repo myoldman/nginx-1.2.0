@@ -9,6 +9,16 @@
 #define NGX_EMP_SERVER_CONF        0x04000000
 
 extern ngx_module_t           ngx_emp_server_module;
+extern ngx_module_t           ngx_emp_server_core_module;
+
+
+typedef struct {
+    ngx_str_t              *name;
+
+    void                 *(*create_conf)(ngx_cycle_t *cycle);
+    char                 *(*init_conf)(ngx_cycle_t *cycle, void *conf);
+} ngx_emp_server_module_t;
+
 
 typedef struct {
 	ngx_array_t   *servers;

@@ -4,12 +4,21 @@
 
 
 static ngx_uint_t     ngx_emp_server_max_module;
-static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
-static char *ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd,    void *conf);
+
+// emp server module
 static void *ngx_emp_server_create_conf(ngx_cycle_t *cycle);
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf);
+static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
 
+// emp server core module
+static ngx_int_t ngx_emp_server_core_module_init(ngx_cycle_t *cycle);
+static ngx_int_t ngx_emp_server_core_process_init(ngx_cycle_t *cycle);
+static void *ngx_emp_server_core_create_conf(ngx_cycle_t *cycle);
+static char *ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf);
+static char *ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd,    void *conf);
+
+// emp server  module
 static ngx_command_t  ngx_emp_server_commands[] = {
 
     { ngx_string("log_servers"),
@@ -18,22 +27,14 @@ static ngx_command_t  ngx_emp_server_commands[] = {
       0,
       0,
       NULL },
-
-    { ngx_string("server"),
-      NGX_EMP_SERVER_CONF|NGX_CONF_1MORE,
-      ngx_log_servers_server,
-      0,
-      0,
-      NULL },
-
     ngx_null_command
 };
 
 
 static ngx_core_module_t  ngx_emp_server_module_ctx = {
     ngx_string("log_servers"),
-    ngx_emp_server_create_conf,
-    ngx_emp_server_init_conf
+    NULL,
+    ngx_emp_server_init_conf,
 };
 
 
@@ -51,6 +52,48 @@ ngx_module_t  ngx_emp_server_module = {
     NULL,                                  /* exit master */
     NGX_MODULE_V1_PADDING
 };
+// emp server module
+
+// emp server core module
+static ngx_str_t  emp_server_core_name = ngx_string("emp_server_core");
+
+
+static ngx_command_t  ngx_emp_server_core_commands[] = {
+
+    { ngx_string("server"),
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      ngx_log_servers_server,
+      0,
+      0,
+      NULL },
+
+      ngx_null_command
+};
+
+
+ngx_emp_server_module_t  ngx_emp_server_core_module_ctx = {
+    &emp_server_core_name,
+    ngx_emp_server_core_create_conf,            /* create configuration */
+    ngx_emp_server_core_init_conf              /* init configuration */
+};
+
+
+ngx_module_t  ngx_emp_server_core_module = {
+    NGX_MODULE_V1,
+    &ngx_emp_server_core_module_ctx,            /* module context */
+    ngx_emp_server_core_commands,               /* module directives */
+    NGX_EMP_SERVER_MODULE,                      /* module type */
+    NULL,                                  /* init master */
+    ngx_emp_server_core_module_init,                 /* init module */
+    ngx_emp_server_core_process_init,                /* init process */
+    NULL,                                  /* init thread */
+    NULL,                                  /* exit thread */
+    NULL,                                  /* exit process */
+    NULL,                                  /* exit master */
+    NGX_MODULE_V1_PADDING
+};
+// emp core module
+
 
 static char *
 ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
@@ -177,26 +220,7 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     return NGX_CONF_OK;
 }
 
-static void *
-ngx_emp_server_create_conf(ngx_cycle_t *cycle)
-{
-	printf("called:ngx_emp_server_create_conf\n");
 
-    ngx_emp_server_conf_t  *escf;
-
-    escf = ngx_palloc(cycle->pool, sizeof(ngx_emp_server_conf_t));
-    if (escf == NULL) {
-        return NULL;
-    }
-
-	//escf->servers = ngx_array_create(cycle->pool, 1,
-    //                                     sizeof(ngx_addr_t));
-    //if (escf->servers == NULL) {
-    //        return NULL;
-    //}
-	
-    return escf;
-}
 
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf)
 {
@@ -208,5 +232,109 @@ static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf)
     }
 	return NGX_CONF_OK;
 }
+
+static void *
+ngx_emp_server_core_create_conf(ngx_cycle_t *cycle)
+{
+	printf("called:ngx_emp_server_core_create_conf\n");
+    ngx_emp_server_conf_t  *ecf;
+
+    ecf = ngx_palloc(cycle->pool, sizeof(ngx_emp_server_conf_t));
+    if (ecf == NULL) {
+        return NULL;
+    }
+
+    return ecf;
+}
+
+
+static char *
+ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
+{
+	printf("called:ngx_emp_server_core_init_conf\n");
+    ngx_event_conf_t  *ecf = conf;
+
+    ngx_int_t            i;
+    ngx_module_t        *module;
+    ngx_emp_server_module_t  *emp_server_module;
+
+    module = NULL;
+
+    if (module == NULL) {
+        for (i = 0; ngx_modules[i]; i++) {
+
+            if (ngx_modules[i]->type != NGX_EMP_SERVER_MODULE) {
+                continue;
+            }
+
+            emp_server_module = ngx_modules[i]->ctx;
+
+            if (ngx_strcmp(emp_server_module->name->data, emp_server_core_name.data) == 0)
+            {
+                continue;
+            }
+
+            module = ngx_modules[i];
+            break;
+        }
+    }
+
+    if (module == NULL) {
+        ngx_log_error(NGX_LOG_EMERG, cycle->log, 0, "no emp_server module found");
+        return NGX_CONF_ERROR;
+    }
+
+    emp_server_module = module->ctx;
+    ngx_conf_init_ptr_value(ecf->name, emp_server_module->name->data);
+
+    return NGX_CONF_OK;
+}
+
+static ngx_int_t
+ngx_emp_server_module_init(ngx_cycle_t *cycle)
+{
+	printf("called:ngx_emp_server_module_init\n");
+    void              ***cf;
+    u_char              *shared;
+    size_t               size, cl;
+    ngx_shm_t            shm;
+    ngx_time_t          *tp;
+    ngx_core_conf_t     *ccf;
+    ngx_emp_server_conf_t    *ecf;
+
+    cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
+    ecf = (*cf)[ngx_emp_server_core_module.ctx_index];
+
+    if (!ngx_test_config && ngx_process <= NGX_PROCESS_MASTER) {
+        ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
+                      "using the \"%s\" emp server method", ecf->name);
+    }
+	
+    return NGX_OK;
+}
+
+static ngx_int_t
+ngx_emp_server_process_init(ngx_cycle_t *cycle)
+{
+	printf("called:ngx_emp_server_process_init\n");
+    ngx_uint_t           m, i;
+    ngx_event_t         *rev, *wev;
+    ngx_listening_t     *ls;
+    ngx_connection_t    *c, *next, *old;
+    ngx_core_conf_t     *ccf;
+    ngx_emp_server_conf_t    *ecf;
+    ngx_emp_server_module_t  *module;
+
+    ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
+    ecf = ngx_event_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
+
+    if (ccf->master && ccf->worker_processes > 1) {
+    } else {
+    }
+
+    return NGX_OK;
+}
+
+
 
 
