@@ -294,7 +294,7 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
     cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
     ecf = (*cf)[ngx_emp_server_core_module.ctx_index];
 
-	printf("cf is %p, ecf is %\n", cf, ecf);
+	printf("cf is %p, ecf is %p\n", cf, ecf);
 		
     if (!ngx_test_config && ngx_process <= NGX_PROCESS_MASTER) {
         ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
