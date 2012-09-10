@@ -6,7 +6,7 @@
 static ngx_uint_t     ngx_emp_server_max_module;
 
 // emp server module
-static void *ngx_emp_server_create_conf(ngx_cycle_t *cycle);
+//static void *ngx_emp_server_create_conf(ngx_cycle_t *cycle);
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf);
 static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
@@ -291,7 +291,7 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
 }
 
 static ngx_int_t
-ngx_emp_server_module_init(ngx_cycle_t *cycle)
+ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 {
 	printf("called:ngx_emp_server_module_init\n");
     void              ***cf;
@@ -314,7 +314,7 @@ ngx_emp_server_module_init(ngx_cycle_t *cycle)
 }
 
 static ngx_int_t
-ngx_emp_server_process_init(ngx_cycle_t *cycle)
+ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 {
 	printf("called:ngx_emp_server_process_init\n");
     //ngx_uint_t           m, i;
