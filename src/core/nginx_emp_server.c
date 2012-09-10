@@ -280,7 +280,7 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
 
     emp_server_module = module->ctx;
     ngx_conf_init_ptr_value(ecf->name, emp_server_module->name->data);
-
+	printf("called:ngx_emp_server_core_init_conf OK\n");
     return NGX_CONF_OK;
 }
 
