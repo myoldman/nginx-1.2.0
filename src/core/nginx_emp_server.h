@@ -19,8 +19,12 @@ typedef struct {
     char                 *(*init_conf)(ngx_cycle_t *cycle, void *conf);
 } ngx_emp_server_module_t;
 
+#define ngx_emp_server_get_conf(conf_ctx, module)                                  \
+             (*(ngx_get_conf(conf_ctx, ngx_emp_server_module))) [module.ctx_index];
+
 
 typedef struct {
+	u_char       *name;
 	ngx_array_t   *servers;
 } ngx_emp_server_conf_t;
 

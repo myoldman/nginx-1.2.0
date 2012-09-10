@@ -252,7 +252,7 @@ static char *
 ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
 {
 	printf("called:ngx_emp_server_core_init_conf\n");
-    ngx_event_conf_t  *ecf = conf;
+    ngx_emp_server_conf_t  *ecf = conf;
 
     ngx_int_t            i;
     ngx_module_t        *module;
@@ -326,7 +326,7 @@ ngx_emp_server_process_init(ngx_cycle_t *cycle)
     ngx_emp_server_module_t  *module;
 
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
-    ecf = ngx_event_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
+    ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
     if (ccf->master && ccf->worker_processes > 1) {
     } else {
