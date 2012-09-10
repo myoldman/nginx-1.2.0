@@ -103,7 +103,7 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     void               ***ctx;
     ngx_uint_t            i;
     ngx_conf_t            pcf;
-    ngx_core_module_t   *m;
+    ngx_emp_server_module_t   *m;
 
     /* count the number of the event modules and set up their indices */
 
