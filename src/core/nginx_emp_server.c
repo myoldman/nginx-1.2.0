@@ -196,7 +196,7 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
 
-    ngx_memzero(addr, sizeof(ngx_addr_t));
+    ngx_memzero(emp_server, sizeof(ngx_emp_server_t));
 
     value = cf->args->elts;
 
@@ -213,8 +213,8 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         return NGX_CONF_ERROR;
     }
-	emp_server.addrs = u.addrs;
-	emp_server.naddrs = u.naddrs;
+	emp_server->addrs = u.addrs;
+	emp_server->naddrs = u.naddrs;
 	printf("called:ngx_log_servers_server OK\n");
     return NGX_CONF_OK;
 }
