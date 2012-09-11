@@ -316,7 +316,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     } else {
     	 server = ecf->servers->elts;
 		 for(i = 0; i< ecf->servers->nelts; i++) {
-			server_addr = inet_ntoa(server[i].sockaddr->sin_addr);
+			server_addr = inet_ntoa(((struct sockaddr_in*)server[i].sockaddr)->sin_addr);
 			printf("server_addr is %s\n", server_addr);
 		 }
     }
