@@ -307,7 +307,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
 	ngx_addr_t *server;
-	ngx_int_t i;
+	ngx_uint_t i;
 	char *server_addr;
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
@@ -316,7 +316,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     } else {
     	 server = ecf->servers->elts;
 		 for(i = 0; i< ecf->servers->nelts; i++) {
-			server_addr = inet_ntoa(server[i]->sockaddr->sin_addr);
+			server_addr = inet_ntoa(server[i].sockaddr->sin_addr);
 			printf("server_addr is %s\n", server_addr);
 		 }
     }
