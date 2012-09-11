@@ -181,18 +181,18 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
     ngx_url_t                    u;
-    ngx_addr_t  *addr;
+    ngx_emp_server_t  *emp_server;
 
     if (escf->servers == NULL) {
         escf->servers = ngx_array_create(cf->pool, 4,
-                                         sizeof(ngx_addr_t));
+                                         sizeof(ngx_emp_server_t));
         if (escf->servers == NULL) {
             return NGX_CONF_ERROR;
         }
     }
 
-    addr = ngx_array_push(escf->servers);
-    if (addr == NULL) {
+    emp_server = ngx_array_push(escf->servers);
+    if (emp_server == NULL) {
         return NGX_CONF_ERROR;
     }
 
@@ -213,9 +213,8 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         return NGX_CONF_ERROR;
     }
-
-	printf("server_addr is %s %d\n", u.host.data, u.port);
-    addr = u.addrs;
+	emp_server.addrs = u.addrs;
+	emp_server.naddrs = u.naddrs;
 	printf("called:ngx_log_servers_server OK\n");
     return NGX_CONF_OK;
 }
@@ -306,9 +305,9 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	printf("called:ngx_emp_server_process_init\n");
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
-	ngx_addr_t *server;
-	ngx_uint_t i;
-//	char *server_addr;
+	ngx_emp_server_t *server;
+	ngx_uint_t i,j;
+	char *server_addr;
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
@@ -316,8 +315,11 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     } else {
     	 server = ecf->servers->elts;
 		 for(i = 0; i< ecf->servers->nelts; i++) {
-			//server_addr = inet_ntoa(((struct sockaddr_in*)server[i].sockaddr)->sin_addr);
-			//printf("server_addr is %s\n", server_addr);
+		 	for (j = 0; j < server[i].naddrs; j++) {
+				server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
+				printf("server is %s\n",server_addr);
+            }
+
 		 }
     }
 	printf("called:ngx_emp_server_process_init OK\n");
