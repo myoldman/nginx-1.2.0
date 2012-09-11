@@ -319,7 +319,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 		 	for (j = 0; j < server[i].naddrs; j++) {
 				server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
 				port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
-				ngx_log_error(NGX_LOG_EMERG, cycle->log, "server is %s:%d\n",server_addr, port);
+				ngx_log_error(NGX_LOG_EMERG, cycle->log, 0, "server is %s:%d\n", server_addr, port);
             }
 
 		 }
