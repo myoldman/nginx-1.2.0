@@ -308,7 +308,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ngx_emp_server_conf_t    *ecf;
 	ngx_addr_t *server;
 	ngx_uint_t i;
-	char *server_addr;
+//	char *server_addr;
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
