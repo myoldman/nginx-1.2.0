@@ -214,7 +214,7 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
 
-	printf("server_addr is %s\n", u.host.data);
+	printf("server_addr is %s %d\n", u.host.data, u.port);
     addr = u.addrs;
 	printf("called:ngx_log_servers_server OK\n");
     return NGX_CONF_OK;
