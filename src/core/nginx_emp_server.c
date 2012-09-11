@@ -308,6 +308,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	ngx_emp_server_t *server;
 	ngx_uint_t i,j;
 	char *server_addr;
+	in_port_t port;
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
@@ -317,6 +318,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 		 for(i = 0; i< ecf->servers->nelts; i++) {
 		 	for (j = 0; j < server[i].naddrs; j++) {
 				server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
+				port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
 				printf("server is %s\n",server_addr);
             }
 
