@@ -287,7 +287,11 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 	printf("called:ngx_emp_server_module_init\n");
     void              ***cf;
     ngx_emp_server_conf_t    *ecf;
-
+	ngx_emp_server_t *server;
+	ngx_uint_t i,j;
+	char *server_addr;
+	in_port_t port;
+	
     cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
     ecf = (*cf)[ngx_emp_server_core_module.ctx_index];
 		
@@ -295,6 +299,15 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
         ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
                       "using the \"%s\" emp server method", ecf->name);
     }
+
+	server = ecf->servers->elts;
+	for(i = 0; i< ecf->servers->nelts; i++) {
+		for (j = 0; j < server[i].naddrs; j++) {
+			server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
+			port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
+			printf("server is %s:%d\n", server_addr, port);
+        }
+	}
 	printf("called:ngx_emp_server_module_init OK\n");
     return NGX_OK;
 }
@@ -305,31 +318,11 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	printf("called:ngx_emp_server_process_init\n");
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
-	ngx_emp_server_t *server;
-	ngx_uint_t i,j;
-	char *server_addr;
-	in_port_t port;
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
     if (ccf->master && ccf->worker_processes > 1) {
-		 server = ecf->servers->elts;
-		 for(i = 0; i< ecf->servers->nelts; i++) {
-		 	for (j = 0; j < server[i].naddrs; j++) {
-				server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
-				port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
-				printf("server is %s:%d\n", server_addr, port);
-            }
-		 }
     } else {
-    	 server = ecf->servers->elts;
-		 for(i = 0; i< ecf->servers->nelts; i++) {
-		 	for (j = 0; j < server[i].naddrs; j++) {
-				server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
-				port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
-				printf("server is %s:%d\n", server_addr, port);
-            }
-		 }
     }
 	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
