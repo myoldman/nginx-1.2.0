@@ -216,7 +216,7 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 
     addr = u.addrs;
-
+	printf("called:ngx_log_servers_server OK\n");
     return NGX_CONF_OK;
 }
 
@@ -230,6 +230,7 @@ static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf)
                       "no \"log_servers\" section in configuration");
         return NGX_CONF_ERROR;
     }
+	printf("called:ngx_emp_server_init_conf OK\n");
 	return NGX_CONF_OK;
 }
 
@@ -244,6 +245,7 @@ ngx_emp_server_core_create_conf(ngx_cycle_t *cycle)
         return NULL;
     }
 	ecf->name = (void *) NGX_CONF_UNSET;
+	printf("called:ngx_emp_server_core_create_conf OK\n");
     return ecf;
 }
 
@@ -276,7 +278,7 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
     }
 	
     ngx_conf_init_ptr_value(ecf->name, emp_server_module_temp->name->data);
-	printf("called:ngx_emp_server_core_init_conf OK %s\n", ecf->name);
+	printf("called:ngx_emp_server_core_init_conf OK\n");
     return NGX_CONF_OK;
 }
 
@@ -289,14 +291,12 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 
     cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
     ecf = (*cf)[ngx_emp_server_core_module.ctx_index];
-
-	printf("cf is %p, ecf is %p\n", cf, ecf);
 		
     if (!ngx_test_config && ngx_process <= NGX_PROCESS_MASTER) {
         ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
                       "using the \"%s\" emp server method", ecf->name);
     }
-	
+	printf("called:ngx_emp_server_module_init OK\n");
     return NGX_OK;
 }
 
@@ -306,14 +306,21 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	printf("called:ngx_emp_server_process_init\n");
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
-
+	ngx_addr_t *server;
+	ngx_int_t i;
+	char *server_addr;
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
     if (ccf->master && ccf->worker_processes > 1) {
     } else {
+    	 server = ecf->servers->elts;
+		 for(i = 0; i< ecf->servers->nelts; i++) {
+			server_addr = inet_ntoa(server[i]->sockaddr->sin_addr);
+			printf("server_addr is %s\n", server_addr);
+		 }
     }
-
+	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
 }
 
