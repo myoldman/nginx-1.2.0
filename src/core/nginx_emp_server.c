@@ -214,7 +214,7 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
 
-
+	printf("server_addr is %s\n", u.host.data);
     addr = u.addrs;
 	printf("called:ngx_log_servers_server OK\n");
     return NGX_CONF_OK;
@@ -316,8 +316,8 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     } else {
     	 server = ecf->servers->elts;
 		 for(i = 0; i< ecf->servers->nelts; i++) {
-			server_addr = inet_ntoa(((struct sockaddr_in*)server[i].sockaddr)->sin_addr);
-			printf("server_addr is %s\n", server_addr);
+			//server_addr = inet_ntoa(((struct sockaddr_in*)server[i].sockaddr)->sin_addr);
+			//printf("server_addr is %s\n", server_addr);
 		 }
     }
 	printf("called:ngx_emp_server_process_init OK\n");
