@@ -1,7 +1,10 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <nginx_emp_server.h>
+#include <event.h>
 
+struct event_base *listen_base;
+struct event_base *timer_base;
 
 static ngx_uint_t     ngx_emp_server_max_module;
 
@@ -299,7 +302,8 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
         ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
                       "using the \"%s\" emp server method", ecf->name);
     }
-
+	listen_base = event_init();
+	timer_base = event_init();
 	server = ecf->servers->elts;
 	for(i = 0; i< ecf->servers->nelts; i++) {
 		for (j = 0; j < server[i].naddrs; j++) {
