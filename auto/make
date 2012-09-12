@@ -61,7 +61,7 @@ ngx_incs=`echo $CORE_INCS $NGX_OBJS \
 
 cat << END                                                    >> $NGX_MAKEFILE
 
-CORE_DEPS = $ngx_deps" -levent"
+CORE_DEPS = $ngx_deps
 
 
 CORE_INCS = $ngx_include_opt$ngx_incs
