@@ -242,7 +242,7 @@ int connection_add_to_list(connection_t *connection)
 	pthread_mutex_lock(&emp_conn_lock);
 
 	pthread_mutex_lock(&connection->lock);
-	c->next = emp_conns;
+	connection->next = emp_conns;
 	pthread_mutex_unlock(&connection->lock);
 
 	emp_conns = connection;
@@ -324,7 +324,7 @@ int emp_server_connect(connection_t *connection) {
 			*/
 				struct event_base *base = connection->event.ev_base;
 				if (event_del(&connection->event) == -1) {
-					pthread_mutex_unlock(&s->lock);
+					pthread_mutex_unlock(&connection->lock);
 					LM_ERR("event_del failed \n");
 					continue;
 				}
@@ -467,7 +467,7 @@ static void server_taskitem_got(int fd, short which, void *arg) {
 		
 		//LM_DBG( "ActionID is [%s], Event is [%s]\n", actionid, event);
 
-		struct emp_server_message_handler_t *handles = NULL;
+		emp_server_message_handler_t *handles = NULL;
 		
 		handles = (emp_server_message_handler_t*)	server_find_handle(ACTION, action);
 		if (handles){
@@ -537,7 +537,7 @@ int server_connect_init(struct event_base *server_ev_base){
 
 	struct sockaddr_in sin;  
 	struct hostent *ast_hostent;
-	char iabuf[INET_ADDRSTRLEN];
+//	char iabuf[INET_ADDRSTRLEN];
 	int sfd;
 	
 	srv = proxy_config.serverlist;
