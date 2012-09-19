@@ -1,6 +1,7 @@
 #include "emp_server.h"
 #include "task_thread.h"
 #include "standard.h"
+#include "dprint.h"
 
 #define ARRAY_LEN(a) (sizeof(a) / sizeof(0[a]))
 #define HANDLE_COUNT ARRAY_LEN(built_handle_server)
@@ -15,6 +16,9 @@ pthread_mutex_t emp_conn_lock = PTHREAD_MUTEX_INITIALIZER;
 proxy_config_t proxy_config;
 struct event_base *listen_base;
 struct event_base *timer_base;
+int server_now = -1;
+int server_num = 0;
+
 
 
 // method definition
@@ -59,7 +63,7 @@ static emp_server_message_handler_t built_handle_server[] =
 ************************************************************/
 static emp_server_message_handler_t *server_find_handle(int type, const char *name)
 {
-	int x;
+	unsigned int x;
 	for (x = 0; x < HANDLE_COUNT; x++) {
 		if ((built_handle_server[x].type == type) && !strcasecmp(name, built_handle_server[x].name))
 			return (emp_server_message_handler_t*)&built_handle_server[x];
@@ -101,7 +105,7 @@ static void handle_SendResponseBodyRes(connection_t *connection, message_t *mess
    snprintf(cmp, sizeof(cmp), "%s: ", var);
    for (x = 0; x < message->hdrcount; x++)
 	 if (!strncasecmp(cmp, message->headers[x], strlen(cmp)))
-	   return m->headers[x] + strlen(cmp);
+	   return message->headers[x] + strlen(cmp);
    return "";
  }
 
@@ -161,7 +165,7 @@ static void handle_SendResponseBodyRes(connection_t *connection, message_t *mess
   * cleanup a connection
   * @param	 c: the connection which will be cleanup
   ************************************************************/
-  void connection_cleanup(connection_t` *c) {
+  void connection_cleanup(connection_t *c) {
 	  assert(c != NULL);
   
   }
@@ -189,7 +193,7 @@ static void handle_SendResponseBodyRes(connection_t *connection, message_t *mess
 	 char iabuf[INET_ADDRSTRLEN];
 	 LM_DBG("*** Disconnect from [%s]\n", ast_inet_ntoa(iabuf, sizeof(iabuf), connection->sin.sin_addr));
  
-	 int ret = connection_remove_from_list(connection);
+	 connection_remove_from_list(connection);
  
 	 //if (!ret)
 	//	 return;
@@ -226,9 +230,9 @@ int connection_add_to_list(connection_t *connection)
 	}
 	
 	while(tmp) {
-		if (!strcmp(tmp->server->emp_host, c->server->emp_host) 
-			&& !strcmp(tmp->server->emp_port, c->server->emp_port)) {
-			LM_ERR("already in the as list\n");
+		if (!strcmp(tmp->server->emp_host, connection->server->emp_host) 
+			&& !strcmp(tmp->server->emp_port, connection->server->emp_port)) {
+			LM_ERR("already in the emp server list\n");
 			return ret;
 		}
 
@@ -242,7 +246,7 @@ int connection_add_to_list(connection_t *connection)
 	pthread_mutex_unlock(&connection->lock);
 
 	emp_conns = connection;
-	 as_num++;
+	server_num++;
 	if( emp_conns == NULL )
 	{
 		LM_ERR( "emp_conns is NULL now\n");
@@ -416,19 +420,14 @@ static void server_message_got(int fd, short which, void *arg) {
 	switch (res) {
             case READ_DATA_RECEIVED:
                 server_push_command(&message);
-                break;
-				
+                break;	
             case READ_ERROR:
-				pthread_t       thread;
-    			pthread_attr_t  attr;
-    			int             ret;
-
-    			pthread_attr_init(&attr);
-				pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 				connection_remove_from_list(connection);
 				if (! emp_server_connect(connection)) 
 					connection_add_to_list(connection);
-		 	break;
+		 		break;
+			default:
+				break;
     }
 }
 
@@ -442,7 +441,7 @@ static void server_message_got(int fd, short which, void *arg) {
 static void server_taskitem_got(int fd, short which, void *arg) {
 
 	task_thread_t *me = (task_thread_t*)arg;
-	TQ_ITEM *item;
+	task_queue_item_t *item;
 	char buf[1];
 	message_t message;
 	memset( &message, 0, sizeof(message_t) );
@@ -455,16 +454,16 @@ static void server_taskitem_got(int fd, short which, void *arg) {
 
 	if (read(fd, buf, 1) != 1) {}
 
-	item = tq_pop(me->new_task_queue);
+	item = task_queue_pop(me->new_task_queue);
 	message = item->task_data.msg;
 	
 	if (NULL != item) {
 		memset(&message_out, 0, sizeof(message_t));
 		message = item->task_data.msg;
-		connection = message.c;
+		connection = message.connection;
 		action = (char*)emp_get_header(&message, "Action");
 
-		tq_item_free(&server_threads_manager,item);
+		task_queue_item_free(&server_threads_manager,item);
 		
 		//LM_DBG( "ActionID is [%s], Event is [%s]\n", actionid, event);
 
@@ -491,14 +490,14 @@ static void server_taskitem_got(int fd, short which, void *arg) {
 ************************************************************/
 void server_dispatch_conn(int sfd, int event_flags,
                   				struct event_base *server_ev_base,
-                       				struct sockaddr_in addr, struct ast_server *srv){
+                       				struct sockaddr_in addr, emp_server_t *srv){
 
 
 	connection_t *connection = (connection_t*)connection_new(sfd, server_message_got, event_flags, tcp_transport,
  	           		     	    addr, server_ev_base);									
 	last_server_thread++;
 	//LM_DBG ("last_server_thread is %d\n", last_server_thread);
-	TASK_THREAD *thread = server_threads_manager.threads + last_server_thread;
+	task_thread_t *thread = server_threads_manager.threads + last_server_thread;
 	
 	
 //	conn *c = (struct conn*)conn_new(sfd, server_message_got, event_flags, tcp_transport,
@@ -534,7 +533,7 @@ int server_threads_init(struct event_base *server_ev_base) {
 ************************************************************/
 int server_connect_init(struct event_base *server_ev_base){
 
-	struct ast_server *srv;
+	emp_server_t *srv;
 
 	struct sockaddr_in sin;  
 	struct hostent *ast_hostent;
@@ -544,18 +543,18 @@ int server_connect_init(struct event_base *server_ev_base){
 	srv = proxy_config.serverlist;
 	while (srv) {
 
-		LM_DBG("srv->port= %s\n", srv->ast_port);	
-		ast_hostent = gethostbyname(srv->ast_host);
+		LM_DBG("srv->port= %s\n", srv->emp_port);	
+		ast_hostent = gethostbyname(srv->emp_host);
 
 		if (!ast_hostent) {
-			LM_ERR("Cannot resolve host %s, cannot add!\n", srv->ast_host);
+			LM_ERR("Cannot resolve host %s, cannot add!\n", srv->emp_host);
 			continue;
 		}
 
 		bzero((char *) &sin, sizeof(sin));
 		sin.sin_family = AF_INET;
 		memcpy(&sin.sin_addr.s_addr, ast_hostent->h_addr, ast_hostent->h_length);
-		sin.sin_port = htons(atoi(srv->ast_port));
+		sin.sin_port = htons(atoi(srv->emp_port));
 
 		int flag = 1;
 		setsockopt( sfd, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(flag) );

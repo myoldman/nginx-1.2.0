@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 #include <netinet/in.h> 
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <event.h>
@@ -11,6 +12,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 
 #define MAX_HEADERS     256
