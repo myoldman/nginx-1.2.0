@@ -1,6 +1,9 @@
 #include "standard.h"
 #include "dprint.h"
 
+const char *ast_inet_ntoa(char *buf, int bufsiz, struct in_addr ia) {
+  return inet_ntop(AF_INET, &ia, buf, bufsiz);
+}
 
 /** 
 * This routine based on get_input from asterisk manager.c
@@ -14,7 +17,7 @@ int get_input(connection_t *connection, char *output) {
   int res;
   int x;
   struct pollfd fds[1];
-  char iabuf[INET_ADDRSTRLEN];
+  //char iabuf[INET_ADDRSTRLEN];
   
   //LM_DBG("s->inbuf = %s\n", s->inbuf);
 
@@ -82,7 +85,7 @@ int get_input(connection_t *connection, char *output) {
  * read a UDP request.
  */
 enum try_read_result try_read_udp(connection_t *connection) {
-    int res;
+   	//int res;
 
     assert(connection != NULL);
 
@@ -106,7 +109,7 @@ enum try_read_result try_read_network(connection_t *connection, message_t *messa
 
     enum try_read_result gotdata = READ_NO_DATA_RECEIVED;
     int res;
-    int num_allocs = 0;
+    //int num_allocs = 0;
     assert(connection != NULL);
 	assert(message != NULL);
     
