@@ -2,7 +2,7 @@
  * source file of the task thread and task queue
  * \author lh
  */
-#include "task_threads.h"
+#include "task_thread.h"
 	
 /***********************************************************/
 /**
@@ -10,7 +10,7 @@
  * @param   ttm   
  * @param   callback 
  ************************************************************/
-void set_event_callback(TASK_THREADS_MANAGER *ttm, void (*callback)(int, short, void *)) {
+void set_event_callback(task_threads_manager_t *ttm, void (*callback)(int, short, void *)) {
     ttm->thread_libevent_process = callback;
 }
 
@@ -19,7 +19,7 @@ void set_event_callback(TASK_THREADS_MANAGER *ttm, void (*callback)(int, short, 
  * Init the connect task queue
  * @param tq: task queue to init
  ************************************************************/
-void tq_init(TQ *tq) {
+void task_queue_init(task_queue_t *tq) {
     pthread_mutex_init(&tq->lock, NULL);
     pthread_cond_init(&tq->cond, NULL);
     tq->head = NULL;
@@ -32,17 +32,17 @@ void tq_init(TQ *tq) {
  * @param tq: task queue to pop
  * @return   item, or NULL if no item is available
  ************************************************************/
-TQ_ITEM *tq_pop(TQ *tq) {
-    TQ_ITEM *item;
+task_queue_item_t *task_queue_pop(task_queue_t *task_queue) {
+    task_queue_item_t *item;
 
-    pthread_mutex_lock(&tq->lock);
-    item = tq->head;
+    pthread_mutex_lock(&task_queue->lock);
+    item = task_queue->head;
     if (NULL != item) {
-        tq->head = item->next;
-        if (NULL == tq->head)
-            tq->tail = NULL;
+        task_queue->head = item->next;
+        if (NULL == task_queue->head)
+            task_queue->tail = NULL;
     }
-    pthread_mutex_unlock(&tq->lock);
+    pthread_mutex_unlock(&task_queue->lock);
 
     return item;
 }
@@ -53,7 +53,7 @@ TQ_ITEM *tq_pop(TQ *tq) {
  * @param tq: task queue to push
  * @param item: task queue item
  ************************************************************/
-void tq_push(TQ *tq, TQ_ITEM *item) {
+void task_queue_push(task_queue_t *tq, task_queue_item_t *item) {
     if( tq == NULL || item == NULL ){
 	LM_ERR("in tq_push tq or item is null\n");
 	return;
@@ -78,14 +78,14 @@ void tq_push(TQ *tq, TQ_ITEM *item) {
  * @param   nitems
  * @return  item, or NULL if no item is available
  ************************************************************/
-TQ_ITEM *tq_item_new(TASK_THREADS_MANAGER *thread_manager, int nitems) {
+task_queue_item_t *task_queue_item_new(task_threads_manager_t *thread_manager, int nitems) {
 
 	if( thread_manager == NULL ){
 		LM_ERR( " in tq_item_new thead manager is null \n");
 		return NULL;
 	}
 
-    TQ_ITEM *item = NULL;
+    task_queue_item_t *item = NULL;
     pthread_mutex_t *t_list_lock;
     t_list_lock	= &(thread_manager->task_freelist_lock);
 	
@@ -102,7 +102,7 @@ TQ_ITEM *tq_item_new(TASK_THREADS_MANAGER *thread_manager, int nitems) {
 		LM_DBG("freelist is null ,should molloc\n");
 	
         /* Allocate a bunch of items at once to reduce fragmentation */
-        item = (TQ_ITEM*)malloc(sizeof(TQ_ITEM) * nitems);
+        item = (task_queue_item_t*)malloc(sizeof(task_queue_item_t) * nitems);
         if (NULL == item){
 	     LM_DBG("out of memery\n");
             return NULL;
@@ -133,7 +133,7 @@ TQ_ITEM *tq_item_new(TASK_THREADS_MANAGER *thread_manager, int nitems) {
  * @param   t_list_lock: mutex
  * @param   item: task queue item
  ************************************************************/
-void tq_item_free(TASK_THREADS_MANAGER *thread_manager, TQ_ITEM *item) {
+void task_queue_item_free(task_threads_manager_t *thread_manager, task_queue_item_t *item) {
 
 	if( thread_manager == NULL || item == NULL ){
 		LM_ERR( " in tq_item_free thead manager or item is null \n");
@@ -157,7 +157,7 @@ void tq_item_free(TASK_THREADS_MANAGER *thread_manager, TQ_ITEM *item) {
  * @param   me   
  *
  ************************************************************/
-static void setup_task_thread(TASK_THREAD *me) {
+static void setup_task_thread(task_thread_t *me) {
 
 	if( me == NULL ){
 		LM_ERR( " in setup_task_thread task_thread me is null \n");
@@ -179,12 +179,12 @@ static void setup_task_thread(TASK_THREAD *me) {
         exit(1);
     }
     
-    me->new_task_queue = (struct task_queue*)malloc(sizeof(struct task_queue));
+    me->new_task_queue = (task_queue_t*)malloc(sizeof(task_queue_t));
     if (me->new_task_queue == NULL) {
         LM_ERR("Failed to allocate memory for connection queue");
         exit(EXIT_FAILURE);
     }
-    tq_init(me->new_task_queue);
+    task_queue_init(me->new_task_queue);
 	/*
     if (pthread_mutex_init(&me->stats.mutex, NULL) != 0) {
         perror("Failed to initialize mutex");
@@ -227,8 +227,8 @@ static void *worker_thread(void *arg) {
 		return NULL;
 	}
 
-    TASK_THREAD *me = (TASK_THREAD*)arg;
-    TASK_THREADS_MANAGER *ttm = me->ttm;
+    task_thread_t *me = (task_thread_t*)arg;
+    task_threads_manager_t *ttm = me->ttm;
     /* Any per-thread setup can happen here; thread_init() will block until
      * all threads have finished initializing.
      */
@@ -252,7 +252,7 @@ static void *worker_thread(void *arg) {
 * @param   ttm: task thread manager
 * @see
 ************************************************************/
-void task_thread_init(int nthreads, struct event_base *base, TASK_THREADS_MANAGER *ttm) {
+void task_thread_init(int nthreads, struct event_base *base, task_threads_manager_t *ttm) {
 
 	if( ttm == NULL ){
 		LM_ERR( " in task_thread_init ttm is null \n");
@@ -260,7 +260,7 @@ void task_thread_init(int nthreads, struct event_base *base, TASK_THREADS_MANAGE
 	}
 
     int         i;
-    TASK_THREAD *threads;
+    task_thread_t *threads;
 
     pthread_mutex_init(&ttm->init_lock, NULL);
     pthread_cond_init(&ttm->init_cond, NULL);
@@ -268,7 +268,7 @@ void task_thread_init(int nthreads, struct event_base *base, TASK_THREADS_MANAGE
     pthread_mutex_init(&ttm->task_freelist_lock, NULL);
     ttm->task_freelist = NULL;
 
-    ttm->threads = (TASK_THREAD*)calloc(nthreads, sizeof(TASK_THREAD));
+    ttm->threads = (task_thread_t*)calloc(nthreads, sizeof(task_thread_t));
     threads = ttm->threads;
     if (! threads) {
         LM_ERR("Can't allocate thread descriptors");
