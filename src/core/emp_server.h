@@ -2,12 +2,16 @@
 #define _EMP_SERVER_H_
 
 #include <pthread.h>
-#include <netinet/in.h>
+#include <netinet/in.h> 
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <event.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <assert.h>
+
 
 #define MAX_HEADERS     256
 #define MAX_LEN         100

@@ -18,7 +18,7 @@ struct event_base *timer_base;
 
 
 // method definition
-static struct  *server_find_handle(int type, const char *name);
+static emp_server_message_handler_t *server_find_handle(int type, const char *name);
 static void server_push_command(message_t *message) ;
 static void server_message_got(int fd, short which, void *arg);
 static void server_taskitem_got(int fd, short which, void *arg);
@@ -144,7 +144,7 @@ static void handle_SendResponseBodyRes(connection_t *connection, message_t *mess
 	 if (event_add(&connection->event, 0) == -1) {
 	 	LM_ERR("event_add failed\n");
 		 pthread_mutex_unlock(&connection->lock);
-		 conn_close(connection);
+		 connection_close(connection);
 		 perror("event_add");
 		 return NULL;
 	 }

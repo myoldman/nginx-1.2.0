@@ -40,6 +40,7 @@ CORE_DEPS="src/core/nginx.h \
            src/core/emp_server.h \
            src/core/task_thread.h \
            src/core/standard.h \
+           src/core/dprint.h \
            src/core/ngx_crypt.h"
 
 
@@ -75,6 +76,7 @@ CORE_SRCS="src/core/nginx.c \
            src/core/emp_server.c \
            src/core/standard.c \
            src/core/task_thread.c \
+           src/core/dprint.c \
            src/core/ngx_crypt.c"
 
 
