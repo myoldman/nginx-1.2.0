@@ -321,6 +321,8 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
+	server_threads_init(listen_base);
+	server_connect_init(listen_base);
 	printf("called:ngx_emp_server_module_init OK\n");
     return NGX_OK;
 }
