@@ -5,10 +5,29 @@
 #define MAX_LEN         100
 #define MAX_TIMER_NUM		1000
 
+enum try_read_result {
+    READ_DATA_RECEIVED,
+    READ_NO_DATA_RECEIVED,
+    READ_ERROR,            /** an error occured (on the socket) (or client closed connection) */
+    READ_MEMORY_ERROR      /** failed to allocate more memory */
+};
+
+enum network_transport {
+    local_transport, /* Unix sockets*/
+    tcp_transport,
+    udp_transport
+};
+
+enum protocol {
+    ascii_prot = 3, /* arbitrary value. */
+    binary_prot,
+    negotiating_prot /* Discovering the protocol */
+};
+
 /********************/
 /* structure define */
 /********************/
-
+typedef int timer_id;
 typedef struct emp_server_s{
   char emp_host[40];
   char emp_port[10];
@@ -74,24 +93,6 @@ typedef struct {
   connection_t *connection;
 } message_t;
 
-enum try_read_result {
-    READ_DATA_RECEIVED,
-    READ_NO_DATA_RECEIVED,
-    READ_ERROR,            /** an error occured (on the socket) (or client closed connection) */
-    READ_MEMORY_ERROR      /** failed to allocate more memory */
-};
-
-enum network_transport {
-    local_transport, /* Unix sockets*/
-    tcp_transport,
-    udp_transport
-};
-
-enum protocol {
-    ascii_prot = 3, /* arbitrary value. */
-    binary_prot,
-    negotiating_prot /* Discovering the protocol */
-};
 
 /** 
  * @brief server_asymsg:struct define for the server asy message
