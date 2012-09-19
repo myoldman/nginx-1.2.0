@@ -2,7 +2,7 @@
 #include "task_thread.h"
 #include "standard.h"
 
-define ARRAY_LEN(a) (sizeof(a) / sizeof(0[a]))
+#define ARRAY_LEN(a) (sizeof(a) / sizeof(0[a]))
 #define HANDLE_COUNT ARRAY_LEN(built_handle_server)
 #define SERVER_ITEM_NUMBER         64
 task_threads_manager_t server_threads_manager;

@@ -5,6 +5,9 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <event.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define MAX_HEADERS     256
 #define MAX_LEN         100
