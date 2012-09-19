@@ -2,9 +2,7 @@
 #include <ngx_core.h>
 #include <nginx_emp_server.h>
 #include <event.h>
-
-struct event_base *listen_base;
-struct event_base *timer_base;
+#include <emp_server.h>
 
 static ngx_uint_t     ngx_emp_server_max_module;
 
@@ -304,11 +302,20 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
     }
 	listen_base = event_init();
 	timer_base = event_init();
+	memset(&proxy_config, 0, sizeof(proxy_config_t));
 	server = ecf->servers->elts;
 	for(i = 0; i< ecf->servers->nelts; i++) {
 		for (j = 0; j < server[i].naddrs; j++) {
 			server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
 			port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
+			emp_server_t *srv;
+			srv = (emp_server_t*)malloc(sizeof(emp_server_t));
+			memset(srv, 0, sizeof(emp_server_t));
+			strcpy(srv.emp_host, server_addr);
+			sprintf(srv.emp_port,"%d",port);
+			srv->next = proxy_config.serverlist;
+		    proxy_config.serverlist = srv;
+		    proxy_config.svr_n++;
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
