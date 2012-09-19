@@ -19,13 +19,13 @@ typedef struct emp_server_s{
 
 typedef struct{
   emp_server_t *serverlist;
-  int worker_threads;
+  int svr_n;
 } proxy_config_t;
 
 /**
  * The structure representing a connection into cti.
  */
-typedef struct {
+typedef struct connection_s{
 	int    sfd;
 
 	char inbuf[MAX_LEN];
@@ -42,7 +42,7 @@ typedef struct {
 	time_t logintime;  // timestamp of send login request
 	time_t logofftime; // timestamp of send logoff request
 
-	connection_t *pair; // other of dual sessions
+	struct connection_s *pair; // other of dual sessions
 
 	struct event event;
 	short  ev_flags;
@@ -57,7 +57,7 @@ typedef struct {
 	enum network_transport transport; /* what transport is used by this connection */
 
 
-	connection_t   *next;     /* Used for generating a list of conn structures */
+	struct connection_s   *next;     /* Used for generating a list of conn structures */
 	void *thread; /* Pointer to the thread object serving this connection */
 
 	int subscribe; /*the subscribe event*/
@@ -96,7 +96,7 @@ enum protocol {
 /** 
  * @brief server_asymsg:struct define for the server asy message
  */
-typedef struct {
+typedef struct server_asymsg_s{
 	pthread_mutex_t	lock;
 	message_t message;
 	time_t timestamp;
@@ -105,7 +105,7 @@ typedef struct {
 	int appoint;
 	connection_t *connection;
 	struct event timeout_event;
-	server_asymsg_t *next;
+	struct server_asymsg_s *next;
 }server_asymsg_t;
 
 enum{
