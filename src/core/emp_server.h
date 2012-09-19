@@ -53,6 +53,8 @@ typedef struct emp_server_s{
 
 typedef struct{
   emp_server_t *serverlist;
+  int maxretries;
+  int retryinterval;
   int svr_n;
 } proxy_config_t;
 

@@ -303,6 +303,8 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 	listen_base = event_init();
 	timer_base = event_init();
 	memset(&proxy_config, 0, sizeof(proxy_config_t));
+	proxy_config.retryinterval = 50000;
+	proxy_config.maxretries = 3;
 	server = ecf->servers->elts;
 	for(i = 0; i< ecf->servers->nelts; i++) {
 		for (j = 0; j < server[i].naddrs; j++) {
