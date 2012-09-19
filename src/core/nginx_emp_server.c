@@ -311,8 +311,8 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 			emp_server_t *srv;
 			srv = (emp_server_t*)malloc(sizeof(emp_server_t));
 			memset(srv, 0, sizeof(emp_server_t));
-			strcpy(srv.emp_host, server_addr);
-			sprintf(srv.emp_port,"%d",port);
+			strcpy(srv->emp_host, server_addr);
+			sprintf(srv->emp_port,"%d",port);
 			srv->next = proxy_config.serverlist;
 		    proxy_config.serverlist = srv;
 		    proxy_config.svr_n++;
