@@ -3,6 +3,7 @@
  * \author lh
  */
 #include "task_thread.h"
+#include "dprint.h"
 	
 /***********************************************************/
 /**
