@@ -1,6 +1,11 @@
 #ifndef _EMP_SERVER_H_
 #define _EMP_SERVER_H_
 
+#include <pthread.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <event.h>
+
 #define MAX_HEADERS     256
 #define MAX_LEN         100
 #define MAX_TIMER_NUM		1000
