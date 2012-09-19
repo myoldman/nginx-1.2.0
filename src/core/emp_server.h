@@ -147,5 +147,7 @@ extern proxy_config_t proxy_config;
 
 int server_connect_init(struct event_base *server_ev_base);
 int server_threads_init(struct event_base *server_ev_base);
+const char *ast_inet_ntoa(char *buf, int bufsiz, struct in_addr ia);
+
 #endif
 

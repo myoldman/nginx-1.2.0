@@ -1,9 +1,6 @@
 #include "standard.h"
 #include "dprint.h"
 
-const char *ast_inet_ntoa(char *buf, int bufsiz, struct in_addr ia) {
-  return inet_ntop(AF_INET, &ia, buf, bufsiz);
-}
 
 /** 
 * This routine based on get_input from asterisk manager.c
