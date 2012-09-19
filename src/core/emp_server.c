@@ -538,7 +538,7 @@ int server_connect_init(struct event_base *server_ev_base){
 	struct sockaddr_in sin;  
 	struct hostent *ast_hostent;
 //	char iabuf[INET_ADDRSTRLEN];
-	int sfd;
+	int sfd = 0;
 	
 	srv = proxy_config.serverlist;
 	while (srv) {
