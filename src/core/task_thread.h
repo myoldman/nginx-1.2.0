@@ -6,8 +6,8 @@
 /** 
  * @brief	task_queue_item: struct define of task_queue_item link 
  */
-typedef struct{    
-    task_queue_item_t  *next;
+typedef struct task_queue_item_s{    
+    struct task_queue_item_s  *next;
     connection_t *connection;
     int sfd;	
     struct sockaddr_in addr;
