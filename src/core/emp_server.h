@@ -1,8 +1,6 @@
 #ifndef _EMP_SERVER_H_
 #define _EMP_SERVER_H_
 
-#include "task_thread.h"
-
 #define MAX_HEADERS     256
 #define MAX_LEN         100
 #define MAX_TIMER_NUM		1000
@@ -11,12 +9,12 @@
 /* structure define */
 /********************/
 
-typedef struct{
+typedef struct emp_server_s{
   char emp_host[40];
   char emp_port[10];
   int status;
   int type; // 1-active, 0-standby
-  emp_server_s *next;
+  struct emp_server_s *next;
 } emp_server_t;
 
 typedef struct{
