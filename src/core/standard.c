@@ -1,4 +1,5 @@
 #include "standard.h"
+#include "dprint.h"
 
 
 /** 
@@ -35,7 +36,7 @@ int get_input(connection_t *connection, char *output) {
     }
   }
 
-  if (connection->inlen >= sizeof(connection->inbuf) - 1) {
+  if ((unsigned int)connection->inlen >= sizeof(connection->inbuf) - 1) {
 	char iabuf[INET_ADDRSTRLEN]; 
 	const char *ipaddr = (const char*)ast_inet_ntoa(iabuf, sizeof(iabuf), connection->sin.sin_addr);
 
@@ -140,7 +141,7 @@ int _read(connection_t *connection, message_t *message) {
   int res;
 
   for (;;) {
-    res = get_input(connection, message->headers[connection->hdrcount]);
+    res = get_input(connection, message->headers[message->hdrcount]);
 
 	/*
     if (strstr(connection->headers[connection->hdrcount], "--END COMMAND--")) {
@@ -154,12 +155,12 @@ int _read(connection_t *connection, message_t *message) {
     */
 	
     if (res > 0) {
-      if (!connection->in_command && *(connection->headers[connection->hdrcount]) == '\0') {
+      if (!message->in_command && *(message->headers[message->hdrcount]) == '\0') {
         break;
-      } else if (connection->hdrcount < MAX_HEADERS - 1) {
-        connection->hdrcount++;
+      } else if (message->hdrcount < MAX_HEADERS - 1) {
+        message->hdrcount++;
       } else {
-        connection->in_command = 0; // reset when block full
+        message->in_command = 0; // reset when block full
       }
     } else if (res < 0)
       break;
@@ -175,7 +176,7 @@ int _write(connection_t *connection, message_t *message) {
 
   struct pollfd fds[1];
 
-  pthread_mutex_lock(&s->lock);
+  pthread_mutex_lock(&connection->lock);
   for (i = 0; i < message->hdrcount; i++) {
     LM_DBG("write to fd(%d) -> msg = %s\n", connection->sfd, message->headers[i]);
     strncat(msg, message->headers[i], strlen(message->headers[i]));

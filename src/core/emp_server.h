@@ -6,6 +6,7 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <sys/poll.h>
 #include <event.h>
 #include <stdlib.h>
 #include <stdio.h>
