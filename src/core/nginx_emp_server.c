@@ -305,6 +305,10 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 	memset(&proxy_config, 0, sizeof(proxy_config_t));
 	proxy_config.retryinterval = 50000;
 	proxy_config.maxretries = 3;
+	strcpy(proxy_config.log_facility, "LOG_LOCAL1");
+	proxy_config.log_stderr = 1;
+	proxy_config.debug_level = 4;
+	
 	server = ecf->servers->elts;
 	for(i = 0; i< ecf->servers->nelts; i++) {
 		for (j = 0; j < server[i].naddrs; j++) {
@@ -321,6 +325,10 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
+	
+	set_log_facility(proxy_config.log_facility);
+	set_log_stderr(proxy_config.log_stderr);
+    set_debug_level(proxy_config.debug_level);
 	server_threads_init(listen_base);
 	server_connect_init(listen_base);
 	printf("called:ngx_emp_server_module_init OK\n");
