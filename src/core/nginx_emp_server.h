@@ -33,6 +33,8 @@ typedef struct {
 	ngx_array_t   *servers;
 } ngx_emp_server_conf_t;
 
+ngx_int_t *ngx_emp_server_check_appid(char *app_id);
+
 
 #endif
 

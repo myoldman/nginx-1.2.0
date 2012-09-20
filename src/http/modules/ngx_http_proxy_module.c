@@ -8,6 +8,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
+#include <nginx_emp_server.h>
 
 
 typedef struct ngx_http_proxy_rewrite_s  ngx_http_proxy_rewrite_t;
@@ -3350,7 +3351,7 @@ ngx_http_proxy_pass(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     if (plcf->upstream.upstream || plcf->proxy_lengths) {
         return "is duplicate";
     }
-
+	ngx_emp_server_check_appid("aaa")
     clcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);
 
     clcf->handler = ngx_http_proxy_handler;
