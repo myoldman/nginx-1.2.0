@@ -3,6 +3,7 @@
 #include <nginx_emp_server.h>
 #include <event.h>
 #include <emp_server.h>
+#include "dprint.h"
 
 static ngx_uint_t     ngx_emp_server_max_module;
 
