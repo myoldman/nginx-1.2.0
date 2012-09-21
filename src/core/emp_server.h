@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <event2/event.h>
+#include <event2/event_struct.h> 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
