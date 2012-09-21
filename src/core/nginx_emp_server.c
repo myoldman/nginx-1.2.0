@@ -402,8 +402,8 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 void request_callback(struct evhttp_request *req, void *arg)  
 {  
     request_context_t *ctx = (request_context_t *)arg;  
-    struct evhttp_uri *new_uri = NULL;  
-    const char *new_location = NULL;  
+    //struct evhttp_uri *new_uri = NULL;  
+    //const char *new_location = NULL;  
     /* response is ready */  
     switch(req->response_code)  
     {  
@@ -439,7 +439,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 
 void context_free(request_context_t *ctx)  
 {  
-    evhttp_connection_free(ctx->cn);  
+    evhttp_connection_free(ctx->connection);  
     event_base_free(ctx->base);  
     if (ctx->buffer)  
         evbuffer_free(ctx->buffer);  
@@ -447,7 +447,7 @@ void context_free(request_context_t *ctx)
     free(ctx);  
 }
 
-struct request_context *create_context(const char *url ,const char * method, char * output_data,int len)  
+request_context_t *create_context(const char *url ,const char * method, char * output_data,int len)  
 {  
     request_context_t *ctx = 0;  
     ctx = calloc(1, sizeof(*ctx));  
@@ -468,18 +468,18 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 {  
     /* free connections & request */  
     if (ctx->cn)  
-        evhttp_connection_free(ctx->cn);  
+        evhttp_connection_free(ctx->connection);  
       
     const char * host = evhttp_uri_get_host(ctx->uri);     
     int port = evhttp_uri_get_port(ctx->uri);  
-    ctx->cn = evhttp_connection_base_new(  
+    ctx->connection = evhttp_connection_base_new(  
         ctx->base, NULL,   
         host,  
         port != -1 ? port : 80);  
     ctx->req = evhttp_request_new(request_callback, ctx);  
     evhttp_add_header(ctx->req->output_headers,"method",method);  
     evbuffer_add(ctx->req->output_buffer,output_data,len);  
-    evhttp_make_request(ctx->cn, ctx->req, EVHTTP_REQ_POST, "/");  
+    evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, "/");  
     evhttp_add_header(ctx->req->output_headers, "Host", host);  
     return 0;  
 }  
@@ -487,7 +487,7 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 
 ngx_int_t *ngx_emp_server_check_appid(char *app_id)
 {
-	LM_DBG("proxy_config is %p\n", proxy_config);
+	LM_DBG("proxy_config is %p\n", &proxy_config);
 }
 
 
