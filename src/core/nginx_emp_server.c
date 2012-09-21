@@ -30,7 +30,7 @@ int make_request(request_context_t *ctx ,
 void context_free(request_context_t *ctx);
 request_context_t *create_context(const char *url ,const char * method, char * output_data, int len);
 int make_request(request_context_t *ctx ,const char * method, char * output_data,int len );
-
+emp_server_t *round_robin_select_server();
 
 
 
@@ -368,12 +368,14 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			memset(srv, 0, sizeof(emp_server_t));
 			strcpy(srv->emp_host, server_addr);
 			sprintf(srv->emp_port,"%d",port);
+			srv->status = alive;
 			srv->next = proxy_config_process->serverlist;
 		    proxy_config_process->serverlist = srv;
 		    proxy_config_process->svr_n++;
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
+	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
 	printf("proxy_config is %p pid is %d\n", proxy_config_process, getpid());
 	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
@@ -395,10 +397,10 @@ void request_callback(struct evhttp_request *req, void *arg)
 	         */  
 	        const char * result = evhttp_find_header(req->input_headers,"result");  
 	        printf("result:%s/n",result);  
-	        if( strcmp( result,"MINISTORED_OK") ){  
+	        if( strcmp( result,"OK") ){  
 	            ctx->ok =1;    
 	        }else{  
-	            ctx -> ok = 0;     
+	            ctx->ok = 0;     
 	        }  
 	        event_base_loopexit(ctx->base, 0);  
 	      
@@ -457,18 +459,68 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
         host,  
         port != -1 ? port : 80);  
     ctx->req = evhttp_request_new(request_callback, ctx);  
-    evhttp_add_header(ctx->req->output_headers,"method",method);  
-    evbuffer_add(ctx->req->output_buffer,output_data,len);  
-    evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, "/");  
+    evhttp_add_header(ctx->req->output_headers,"method",method);
+	if(output_data != NULL)
+    	evbuffer_add(ctx->req->output_buffer,output_data,len);
+	if(strcmp(method, "get") == 0){
+		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_GET, "/");  
+	} else {
+		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, "/");  
+	}
+    
     evhttp_add_header(ctx->req->output_headers, "Host", host);  
     return 0;  
 }  
 
+emp_server_t *round_robin_select_server()
+{
+	ngx_int_t i,j;
+	emp_server_t *rr_server;
+	j = proxy_config_process->last_select;
+	do {
+		j = (j + 1)%proxy_config_process.svr_n;
+		proxy_config_process->last_select = j;
+		rr_server = proxy_config_process->serverlist;
+		for(i = 0; i< proxy_config_process->last_select; i++)
+			rr_server = rr_server->next;
+	} while (j != proxy_config_process->last_select);
+	return NULL;
+}
 
 ngx_int_t ngx_emp_server_check_appid(char *app_id)
 {
-	printf("aproxy_config is %p\n", proxy_config_process);
-	return 1;
+	char request_uri[128];
+	emp_server_t *rr_server;
+	rr_server = round_robin_select_server();
+	ngx_int_t  ret;
+	ret = 0;
+	if(rr_server == NULL) {
+		printf("rr_server not selected return success\n" app_id);
+		return 1;
+	}
+
+	if(rr_server->status == dead) {
+		printf("rr_server not is dead return success\n" app_id);
+		return 1;
+	}
+	
+	printf("check appid %s @ %s:s on process %d \n", app_id, rr_server->emp_host, rr_server->emp_port, getpid());
+	sprintf("http://%s:%s/checkAppId", rr_server->emp_host, rr_server->emp_port);
+	request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
+	if (!ctx){ 
+		return 1;
+	}
+	evhttp_add_header(ctx->req->output_headers, "appid", app_id);
+	event_base_dispatch(ctx->base); 
+	struct evbuffer *retval = 0;  
+    if (ctx->ok)  
+    {
+    	ret = 1;
+        retval = ctx->buffer;  
+        ctx->buffer = 0;
+    }  
+	context_free(ctx); 
+	return ret;
 }
 
 

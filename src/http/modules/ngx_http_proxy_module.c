@@ -636,6 +636,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	ngx_list_part_t              *part;
     ngx_table_elt_t              *header;
 	ngx_uint_t i;
+	char *appid = NULL;
 	
 	part = &r->headers_in.headers.part;
 	header = part->elts;
@@ -653,12 +654,17 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		}
 		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
 			printf("appid is %s\n", header[i].value.data);
+			appid = header[i].value.data;
 		}
 		printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
 
-	
-	ngx_emp_server_check_appid("aaa");
+	if(appid != NULL) {
+		ngx_int_t ret = ngx_emp_server_check_appid(appid);
+		if(ret < 0) {
+			return NGX_ERROR;
+		}
+	}
 	
     if (ngx_http_upstream_create(r) != NGX_OK) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
