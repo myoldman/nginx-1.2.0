@@ -125,7 +125,7 @@ ngx_module_t  ngx_emp_server_core_module = {
 static char *
 ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-	LM_DBG("called:ngx_log_servers_block\n");
+	printf("called:ngx_log_servers_block\n");
     char                 *rv;
     void               ***ctx;
     ngx_uint_t            i;
@@ -196,7 +196,7 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             }
         }
     }
-	LM_DBG("called:ngx_log_servers_block OK\n");
+	printf("called:ngx_log_servers_block OK\n");
     return NGX_CONF_OK;
 }
 
@@ -204,7 +204,7 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 static char *
 ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
-	LM_DBG("called:ngx_log_servers_server\n");
+	printf("called:ngx_log_servers_server\n");
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
     ngx_url_t                    u;
@@ -242,7 +242,7 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     }
 	emp_server->addrs = u.addrs;
 	emp_server->naddrs = u.naddrs;
-	LM_DBG("called:ngx_log_servers_server OK\n");
+	printf("called:ngx_log_servers_server OK\n");
     return NGX_CONF_OK;
 }
 
@@ -250,20 +250,20 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf)
 {
-	LM_DBG("called:ngx_emp_server_init_conf\n");
+	printf("called:ngx_emp_server_init_conf\n");
 	if (ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module) == NULL) {
         ngx_log_error(NGX_LOG_EMERG, cycle->log, 0,
                       "no \"log_servers\" section in configuration");
         return NGX_CONF_ERROR;
     }
-	LM_DBG("called:ngx_emp_server_init_conf OK\n");
+	printf("called:ngx_emp_server_init_conf OK\n");
 	return NGX_CONF_OK;
 }
 
 static void *
 ngx_emp_server_core_create_conf(ngx_cycle_t *cycle)
 {
-	LM_DBG("called:ngx_emp_server_core_create_conf\n");
+	printf("called:ngx_emp_server_core_create_conf\n");
     ngx_emp_server_conf_t  *ecf;
 
     ecf = ngx_palloc(cycle->pool, sizeof(ngx_emp_server_conf_t));
@@ -271,7 +271,7 @@ ngx_emp_server_core_create_conf(ngx_cycle_t *cycle)
         return NULL;
     }
 	ecf->name = (void *) NGX_CONF_UNSET;
-	LM_DBG("called:ngx_emp_server_core_create_conf OK\n");
+	printf("called:ngx_emp_server_core_create_conf OK\n");
     return ecf;
 }
 
@@ -279,7 +279,7 @@ ngx_emp_server_core_create_conf(ngx_cycle_t *cycle)
 static char *
 ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
 {
-	LM_DBG("called:ngx_emp_server_core_init_conf\n");
+	printf("called:ngx_emp_server_core_init_conf\n");
     ngx_emp_server_conf_t  *ecf = conf;
 
     ngx_int_t            i;
@@ -304,20 +304,16 @@ ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf)
     }
 	
     ngx_conf_init_ptr_value(ecf->name, emp_server_module_temp->name->data);
-	LM_DBG("called:ngx_emp_server_core_init_conf OK\n");
+	printf("called:ngx_emp_server_core_init_conf OK\n");
     return NGX_CONF_OK;
 }
 
 static ngx_int_t
 ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
 {
-	LM_DBG("called:ngx_emp_server_module_init\n");
+	printf("called:ngx_emp_server_module_init\n");
     void              ***cf;
     ngx_emp_server_conf_t    *ecf;
-	ngx_emp_server_t *server;
-	ngx_uint_t i,j;
-	char *server_addr;
-	in_port_t port;
 	
     cf = ngx_get_conf(cycle->conf_ctx, ngx_emp_server_module);
     ecf = (*cf)[ngx_emp_server_core_module.ctx_index];
@@ -326,37 +322,7 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
         ngx_log_error(NGX_LOG_NOTICE, cycle->log, 0,
                       "using the \"%s\" emp server method", ecf->name);
     }
-	//listen_base = event_init();
-	//timer_base = event_init();
-	//memset(&proxy_config, 0, sizeof(proxy_config_t));
-	//proxy_config.retryinterval = 50000;
-	//proxy_config.maxretries = 3;
-	//strcpy(proxy_config.log_facility, "LOG_LOCAL1");
-	//proxy_config.log_stderr = 1;
-	//proxy_config.debug_level = 4;
 	
-	server = ecf->servers->elts;
-	for(i = 0; i< ecf->servers->nelts; i++) {
-		for (j = 0; j < server[i].naddrs; j++) {
-			server_addr = inet_ntoa(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_addr);
-			port = ntohs(((struct sockaddr_in*)server[i].addrs[j].sockaddr)->sin_port);
-			//emp_server_t *srv;
-			//srv = (emp_server_t*)malloc(sizeof(emp_server_t));
-			//memset(srv, 0, sizeof(emp_server_t));
-			//strcpy(srv->emp_host, server_addr);
-			//sprintf(srv->emp_port,"%d",port);
-			//srv->next = proxy_config.serverlist;
-		    //proxy_config.serverlist = srv;
-		    //proxy_config.svr_n++;
-			LM_DBG("server is %s:%d\n", server_addr, port);
-        }
-	}
-	
-	//set_log_facility(proxy_config.log_facility);
-	//set_log_stderr(proxy_config.log_stderr);
-    //set_debug_level(proxy_config.debug_level);
-	//server_threads_init(listen_base);
-	//server_connect_init(listen_base);
 	printf("called:ngx_emp_server_module_init OK\n");
     return NGX_OK;
 }
