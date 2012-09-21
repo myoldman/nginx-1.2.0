@@ -10,6 +10,8 @@
 
 static ngx_uint_t     ngx_emp_server_max_module;
 pthread_t emp_server_thread_id;
+proxy_config_t *proxy_config_process;
+
 
 typedef struct request_context_s  
 {  
@@ -341,15 +343,16 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
-	memset(&proxy_config, 0, sizeof(proxy_config_t));
-	proxy_config.retryinterval = 50000;
-	proxy_config.maxretries = 3;
-	strcpy(proxy_config.log_facility, "LOG_LOCAL1");
-	proxy_config.log_stderr = 1;
-	proxy_config.debug_level = 4;
-	set_log_facility(proxy_config.log_facility);
-	set_log_stderr(proxy_config.log_stderr);
-    set_debug_level(proxy_config.debug_level);
+	proxy_config_process = calloc(1, sizeof(proxy_config_t));
+	memset(proxy_config, 0, sizeof(proxy_config_t));
+	proxy_config->retryinterval = 50000;
+	proxy_config->maxretries = 3;
+	strcpy(proxy_config->log_facility, "LOG_LOCAL1");
+	proxy_config->log_stderr = 1;
+	proxy_config->debug_level = 4;
+	set_log_facility(proxy_config->log_facility);
+	set_log_stderr(proxy_config->log_stderr);
+    set_debug_level(proxy_config->debug_level);
 	
     if (ccf->master && ccf->worker_processes > 1) {
     } else {
@@ -364,13 +367,13 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			memset(srv, 0, sizeof(emp_server_t));
 			strcpy(srv->emp_host, server_addr);
 			sprintf(srv->emp_port,"%d",port);
-			srv->next = proxy_config.serverlist;
-		    proxy_config.serverlist = srv;
-		    proxy_config.svr_n++;
+			srv->next = proxy_config->serverlist;
+		    proxy_config->serverlist = srv;
+		    proxy_config->svr_n++;
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
-	printf("proxy_config is %p\n", &proxy_config);
+	printf("proxy_config is %p\n", proxy_config);
 	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
 }
@@ -463,7 +466,7 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 
 ngx_int_t ngx_emp_server_check_appid(char *app_id)
 {
-	//printf("proxy_config is %p\n", &proxy_config);
+	printf("proxy_config is %p\n", proxy_config);
 	return 1;
 }
 
