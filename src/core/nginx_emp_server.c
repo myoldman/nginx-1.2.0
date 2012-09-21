@@ -373,7 +373,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
-	printf("proxy_config is %p\n", proxy_config_process);
+	printf("proxy_config is %p pid is $d\n", proxy_config_process, getpid());
 	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
 }
