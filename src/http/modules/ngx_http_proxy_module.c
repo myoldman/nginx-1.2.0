@@ -634,6 +634,8 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
     ngx_http_proxy_ctx_t       *ctx;
     ngx_http_proxy_loc_conf_t  *plcf;
 
+	ngx_emp_server_check_appid("aaa");
+	
     if (ngx_http_upstream_create(r) != NGX_OK) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
@@ -3351,7 +3353,7 @@ ngx_http_proxy_pass(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     if (plcf->upstream.upstream || plcf->proxy_lengths) {
         return "is duplicate";
     }
-	ngx_emp_server_check_appid("aaa");
+
     clcf = ngx_http_conf_get_module_loc_conf(cf, ngx_http_core_module);
 
     clcf->handler = ngx_http_proxy_handler;
