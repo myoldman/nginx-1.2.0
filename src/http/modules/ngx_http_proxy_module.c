@@ -651,7 +651,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			header = part->elts;
 			i = 0;
 		}
-		printf("header %s value is %s\n", header[i]->key.data, header[i]->value.data);
+		printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
 
 	
