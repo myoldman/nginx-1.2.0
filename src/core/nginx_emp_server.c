@@ -485,7 +485,7 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 }  
 
 
-ngx_int_t *ngx_emp_server_check_appid(char *app_id)
+ngx_int_t ngx_emp_server_check_appid(char *app_id)
 {
 	LM_DBG("proxy_config is %p\n", &proxy_config);
 	return 1;
