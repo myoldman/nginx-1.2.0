@@ -164,16 +164,15 @@ static void setup_task_thread(task_thread_t *me) {
 		LM_ERR( " in setup_task_thread task_thread me is null \n");
 		return;
 	}
-    me->base = event_init();
+    me->base = event_base_new();
     if (! me->base) {
         fprintf(stderr, "Can't allocate event base\n");
         exit(1);
     }
 
     /* Listen for notifications from other threads */
-    event_set(&me->notify_event, me->notify_receive_fd,
+    event_assign(&me->notify_event, me->base, me->notify_receive_fd,
               EV_READ | EV_PERSIST, me->ttm->thread_libevent_process, me);
-    event_base_set(me->base, &me->notify_event);
     
     if (event_add(&me->notify_event, 0) == -1) {
         fprintf(stderr, "Can't monitor libevent notify pipe\n");
