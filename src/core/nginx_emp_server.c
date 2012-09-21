@@ -467,7 +467,7 @@ request_context_t *create_context(const char *url ,const char * method, char * o
 int make_request(request_context_t *ctx ,const char * method, char * output_data,int len )  
 {  
     /* free connections & request */  
-    if (ctx->cn)  
+    if (ctx->connection)  
         evhttp_connection_free(ctx->connection);  
       
     const char * host = evhttp_uri_get_host(ctx->uri);     
