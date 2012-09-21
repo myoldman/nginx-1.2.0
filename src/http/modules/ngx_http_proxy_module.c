@@ -654,7 +654,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		}
 		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
 			printf("appid is %s\n", header[i].value.data);
-			appid = header[i].value.data;
+			appid = (char*)header[i].value.data;
 		}
 		printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
