@@ -651,6 +651,9 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			header = part->elts;
 			i = 0;
 		}
+		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
+			printf("appid is %s\n", header[i].value.data);
+		}
 		printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
 
