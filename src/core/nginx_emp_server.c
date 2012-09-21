@@ -478,7 +478,7 @@ emp_server_t *round_robin_select_server()
 	emp_server_t *rr_server;
 	j = proxy_config_process->last_select;
 	do {
-		j = (j + 1)%proxy_config_process.svr_n;
+		j = (j + 1)%proxy_config_process->svr_n;
 		proxy_config_process->last_select = j;
 		rr_server = proxy_config_process->serverlist;
 		for(i = 0; i< proxy_config_process->last_select; i++)
@@ -495,16 +495,17 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	ngx_int_t  ret;
 	ret = 0;
 	if(rr_server == NULL) {
-		printf("rr_server not selected return success\n" app_id);
+		printf("rr_server not selected return success\n");
 		return 1;
 	}
 
 	if(rr_server->status == dead) {
-		printf("rr_server not is dead return success\n" app_id);
+		printf("rr_server not is dead return success\n");
 		return 1;
 	}
 	
-	printf("check appid %s @ %s:s on process %d \n", app_id, rr_server->emp_host, rr_server->emp_port, getpid());
+	printf("check appid %s @ %s:%s on process %d \n", app_id,
+				rr_server->emp_host, rr_server->emp_port, getpid());
 	sprintf("http://%s:%s/checkAppId", rr_server->emp_host, rr_server->emp_port);
 	request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
 	if (!ctx){ 
