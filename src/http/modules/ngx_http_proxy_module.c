@@ -633,7 +633,28 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
     ngx_http_upstream_t        *u;
     ngx_http_proxy_ctx_t       *ctx;
     ngx_http_proxy_loc_conf_t  *plcf;
+	ngx_list_part_t              *part;
+    ngx_table_elt_t              *header;
+	ngx_uint_t i;
+	
+	part = &r->headers_in.headers.part;
+	header = part->elts;
+	
+	for (i = 0; /* void */; i++) {
+	
+		if (i >= part->nelts) {
+			if (part->next == NULL) {
+				break;
+			}
+	
+			part = part->next;
+			header = part->elts;
+			i = 0;
+		}
+		printf("header %s value is %s", header->key.data, header->value.data);
+	}
 
+	
 	ngx_emp_server_check_appid("aaa");
 	
     if (ngx_http_upstream_create(r) != NGX_OK) {
