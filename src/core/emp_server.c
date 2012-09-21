@@ -142,7 +142,7 @@ static void handle_SendResponseBodyRes(connection_t *connection, message_t *mess
 	 connection->item = 0;
 	 connection->ev_flags = event_flags;
  
-	 event_new(base, &connection->event, sfd, event_flags, callback, (void *)connection);
+	 event_assign(&connection->event, base, sfd, event_flags, callback, (void *)connection);
 	
 	 if (event_add(&connection->event, 0) == -1) {
 	 	LM_ERR("event_add failed\n");
@@ -328,7 +328,7 @@ int emp_server_connect(connection_t *connection) {
 					continue;
 				}
 				
-				event_new(base, &connection->event, connection->sfd, EV_READ | EV_PERSIST, server_message_got, (void *)connection);
+				event_assign(&connection->event, base, connection->sfd, EV_READ | EV_PERSIST, server_message_got, (void *)connection);
 				
 				if (event_add(&connection->event, 0) == -1) {
 					pthread_mutex_unlock(&connection->lock);
