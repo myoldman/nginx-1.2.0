@@ -357,14 +357,14 @@ ngx_emp_server_core_module_init(ngx_cycle_t *cycle)
     //set_debug_level(proxy_config.debug_level);
 	//server_threads_init(listen_base);
 	//server_connect_init(listen_base);
-	LM_DBG("called:ngx_emp_server_module_init OK\n");
+	printf("called:ngx_emp_server_module_init OK\n");
     return NGX_OK;
 }
 
 static ngx_int_t
 ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 {
-	LM_DBG("called:ngx_emp_server_process_init\n");
+	printf("called:ngx_emp_server_process_init\n");
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
 	ngx_emp_server_t *server;
@@ -401,11 +401,11 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			srv->next = proxy_config.serverlist;
 		    proxy_config.serverlist = srv;
 		    proxy_config.svr_n++;
-			LM_DBG("server is %s:%d\n", server_addr, port);
+			printf("server is %s:%d\n", server_addr, port);
         }
 	}
 	
-	LM_DBG("called:ngx_emp_server_process_init OK\n");
+	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
 }
  
