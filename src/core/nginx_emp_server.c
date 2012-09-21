@@ -375,6 +375,16 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
+	memset(&proxy_config, 0, sizeof(proxy_config_t));
+	proxy_config.retryinterval = 50000;
+	proxy_config.maxretries = 3;
+	strcpy(proxy_config.log_facility, "LOG_LOCAL1");
+	proxy_config.log_stderr = 1;
+	proxy_config.debug_level = 4;
+	set_log_facility(proxy_config.log_facility);
+	set_log_stderr(proxy_config.log_stderr);
+    set_debug_level(proxy_config.debug_level);
+	
     if (ccf->master && ccf->worker_processes > 1) {
     } else {
     }
