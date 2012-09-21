@@ -343,7 +343,8 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ccf = (ngx_core_conf_t *) ngx_get_conf(cycle->conf_ctx, ngx_core_module);
     ecf = ngx_emp_server_get_conf(cycle->conf_ctx, ngx_emp_server_core_module);
 
-	proxy_config_process = calloc(1, sizeof(proxy_config_t));
+	proxy_config_process = NULL;
+	proxy_config_process = malloc(1, sizeof(proxy_config_t));
 	memset(proxy_config_process, 0, sizeof(proxy_config_t));
 	proxy_config_process->retryinterval = 50000;
 	proxy_config_process->maxretries = 3;
