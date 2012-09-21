@@ -466,7 +466,7 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 
 ngx_int_t ngx_emp_server_check_appid(char *app_id)
 {
-	printf("proxy_config is %p\n", proxy_config_process);
+	printf("aproxy_config is %p\n", proxy_config_process);
 	return 1;
 }
 
