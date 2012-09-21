@@ -1,10 +1,10 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <nginx_emp_server.h>
-#include <event.h>
-#include <http.h>  
-#include <buffer.h>  
-#include <http_struct.h>  
+#include <event2/event.h>  
+#include <event2/http.h>  
+#include <event2/buffer.h>  
+#include <event2/http_struct.h> 
 #include <emp_server.h>
 #include "dprint.h"
 
