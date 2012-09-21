@@ -16,7 +16,6 @@ typedef struct {
     ngx_uint_t                       naddrs;
 } ngx_emp_server_t;
 
-
 typedef struct {
     ngx_str_t              *name;
 

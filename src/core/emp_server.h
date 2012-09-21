@@ -41,6 +41,12 @@ enum protocol {
     negotiating_prot /* Discovering the protocol */
 };
 
+typedef enum server_status {
+    dead = 0, /* arbitrary value. */
+    alive,
+} server_status_e;
+
+
 /********************/
 /* structure define */
 /********************/
@@ -48,8 +54,8 @@ typedef int timer_id;
 typedef struct emp_server_s{
   char emp_host[40];
   char emp_port[10];
-  int status;
-  int type; // 1-active, 0-standby
+  server_status_e status;
+  int type; // 1-active, 0-dead
   struct emp_server_s *next;
 } emp_server_t;
 
@@ -63,6 +69,7 @@ typedef struct{
   int debug_level;
   
   int svr_n;
+  int last_select;
 } proxy_config_t;
 
 /**
