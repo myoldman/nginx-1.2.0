@@ -405,7 +405,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 			
 			printf("result:%s \n",result);
 	        if( strcmp( result,"OK") == 0 ){  
-	            ctx->ok =1;    
+	            ctx->ok = 1;    
 	        }else{  
 	            ctx->ok = 0;     
 	        }  
@@ -423,7 +423,7 @@ void request_callback(struct evhttp_request *req, void *arg)
     }  
     evbuffer_add_buffer(ctx->buffer, req->input_buffer);  
     /* SUCCESS */  
-    ctx->ok = 1;  
+    //ctx->ok = 1;  
 } 
 
 void context_free(request_context_t *ctx)  
