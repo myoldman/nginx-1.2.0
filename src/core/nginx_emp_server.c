@@ -519,6 +519,7 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	}
 	evhttp_add_header(ctx->req->output_headers, "appid", app_id);
 	event_base_dispatch(ctx->base); 
+	printf("check result is %d \n", ctx->ok);
 	struct evbuffer *retval = 0;  
     if (ctx->ok)  
     {
