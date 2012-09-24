@@ -47,7 +47,7 @@ static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 // emp server core module
 static ngx_int_t ngx_emp_server_core_module_init(ngx_cycle_t *cycle);
 static ngx_int_t ngx_emp_server_core_process_init(ngx_cycle_t *cycle);
-static ngx_int_t ngx_emp_server_core_process_exit(ngx_cycle_t *cycle);
+static void ngx_emp_server_core_process_exit(ngx_cycle_t *cycle);
 static void *ngx_emp_server_core_create_conf(ngx_cycle_t *cycle);
 static char *ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf);
 static char *ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd,    void *conf);
@@ -351,7 +351,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	proxy_config_process = NULL;
 	proxy_config_process = malloc(sizeof(proxy_config_t));
 	memset(proxy_config_process, 0, sizeof(proxy_config_t));
-	proxy_config_process->retryinterval = 50000;
+	proxy_config_process->retryinterval = 5000000;
 	proxy_config_process->maxretries = 3;
 	strcpy(proxy_config_process->log_facility, "LOG_LOCAL1");
 	proxy_config_process->log_stderr = 1;
@@ -388,7 +388,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     return NGX_OK;
 }
 
-static ngx_int_t
+static void
 ngx_emp_server_core_process_exit(ngx_cycle_t *cycle) {
 	printf("called:ngx_emp_server_core_process_exit\n");
 
@@ -397,7 +397,7 @@ ngx_emp_server_core_process_exit(ngx_cycle_t *cycle) {
 	emp_server_t *temp;
 	server = proxy_config_process->serverlist;
 	while(server) {
-		pthread_join(server->heart_beat_thread);
+		pthread_join(server->heart_beat_thread, NULL);
 		server->heart_beat_thread = 0;
 		temp = server;
 		server = server->next;
@@ -405,7 +405,6 @@ ngx_emp_server_core_process_exit(ngx_cycle_t *cycle) {
 	}
 
 	printf("called:ngx_emp_server_core_process_exit OK\n");
-    return NGX_OK;
 }
 
 
@@ -537,7 +536,7 @@ static void *heart_beat_thread(void *arg) {
 		sprintf(request_uri, "http://%s:%s/heartBeat", server->emp_host, server->emp_port);
 		request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
 		if (!ctx){ 
-			return 1;
+			continue;
 		}
 		event_base_dispatch(ctx->base);
 		if(ctx->server_down) {
