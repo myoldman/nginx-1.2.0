@@ -661,7 +661,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 
 	if(appid != NULL) {
 		ngx_int_t ret = ngx_emp_server_check_appid(appid);
-		if(ret < 0) {
+		if(!ret) {
 			return NGX_ERROR;
 		}
 	}
