@@ -395,9 +395,14 @@ void request_callback(struct evhttp_request *req, void *arg)
 	         * Response is received. No futher handling is required. 
 	         * Finish 
 	         */  
-	        const char * result = evhttp_find_header(req->input_headers,"result");  
-	        printf("result:%s/n",result);  
-	        if( strcmp( result,"OK") ){  
+	        const char * result = evhttp_find_header(req->input_headers,"result");
+			if(result == NULL) {
+				printf("result is null\r\n");
+	        	break;
+			}
+			
+			printf("result:%s \n",result);
+	        if( strcmp( result,"OK") == 0 ){  
 	            ctx->ok =1;    
 	        }else{  
 	            ctx->ok = 0;     
