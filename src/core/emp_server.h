@@ -70,6 +70,8 @@ typedef struct{
   
   int svr_n;
   int last_select;
+  pthread_t  heart_beat_thread;
+  int heart_beat_running;
 } proxy_config_t;
 
 /**

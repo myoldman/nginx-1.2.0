@@ -19,10 +19,14 @@ typedef struct request_context_s
     struct event_base *base;  
     struct evhttp_connection *connection;  
     struct evhttp_request *req;  
-    struct evbuffer *buffer;  
-    int ok;  
+    struct evbuffer *buffer;
+	int ok;
+	int server_down;
 } request_context_t; 
 
+int ms_sleep(long ms);
+void create_heart_beat_thread(void *(*func)(void *), void *arg);
+static void *heart_beat_thread(void *arg);
 void request_callback(struct evhttp_request *req, void *arg);  
 int make_request(request_context_t *ctx , 
 							const char * method , 
@@ -351,6 +355,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	strcpy(proxy_config_process->log_facility, "LOG_LOCAL1");
 	proxy_config_process->log_stderr = 1;
 	proxy_config_process->debug_level = 4;
+	proxy_config_process->heart_beat_running = 1;
 	set_log_facility(proxy_config_process->log_facility);
 	set_log_stderr(proxy_config_process->log_stderr);
     set_debug_level(proxy_config_process->debug_level);
@@ -372,6 +377,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			srv->next = proxy_config_process->serverlist;
 		    proxy_config_process->serverlist = srv;
 		    proxy_config_process->svr_n++;
+			create_heart_beat_thread(heart_beat_thread, svr);
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
@@ -380,11 +386,22 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
 }
- 
+
+int ms_sleep(long ms) {
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = ms; 
+    return select(0, NULL, NULL, NULL, &tv);
+ }
+
+
 void request_callback(struct evhttp_request *req, void *arg)  
 {	
     request_context_t *ctx = (request_context_t *)arg;
 	if(req == NULL) {
+		printf("server down return success\r\n");
+		ctx->ok = 1;
+		ctx->server_down = 1;
 		event_base_loopexit(ctx->base, 0);  
 	    return; 
 	}
@@ -483,6 +500,55 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
     return 0;  
 }  
 
+static void *heart_beat_thread(void *arg) {
+
+	if( arg == NULL ){
+		LM_ERR( " in worker_thread arg is null \n");
+		return NULL;
+	}
+
+    emp_server_t *server = (emp_server_t*)arg;
+	while(proxy_config_process->heart_beat_running){
+		char request_uri[128];
+		printf("heart beat @ %s:%s on process %d \n",
+					server->emp_host, server->emp_port, getpid());
+		sprintf(request_uri, "http://%s:%s/heartBeat", server->emp_host, server->emp_port);
+		request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
+		if (!ctx){ 
+			return 1;
+		}
+		event_base_dispatch(ctx->base);
+		if(ctx->server_down)
+			server->status = dead;
+		context_free(ctx);
+		ms_sleep(proxy_config_process->retryinterval);
+	}
+
+    return NULL;
+}
+
+
+/***********************************************************/
+/**
+ * create a worker thread for the function
+ * @param   func
+ * @param   arg
+ *
+ ************************************************************/
+void create_heart_beat_thread(void *(*func)(void *), void *arg) {
+    pthread_t       thread;
+    pthread_attr_t  attr;
+    int             ret;
+
+    pthread_attr_init(&attr);
+
+    if ((ret = pthread_create(&thread, &attr, func, arg)) != 0) {
+        fprintf(stderr, "Can't create thread: %s\n",
+                strerror(ret));
+        exit(1);
+    }
+}
+
 emp_server_t *round_robin_select_server()
 {
 	ngx_int_t i,j;
@@ -504,8 +570,6 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	char request_uri[128];
 	emp_server_t *rr_server;
 	rr_server = round_robin_select_server();
-	ngx_int_t  ret;
-	ret = 0;
 	if(rr_server == NULL) {
 		printf("rr_server not selected return success\n");
 		return 1;
@@ -526,15 +590,8 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	evhttp_add_header(ctx->req->output_headers, "appid", app_id);
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
-	struct evbuffer *retval = 0;  
-    if (ctx->ok)  
-    {
-    	ret = 1;
-        retval = ctx->buffer;  
-        ctx->buffer = 0;
-    }  
 	context_free(ctx); 
-	return ret;
+	return ctx->ok;
 }
 
 
