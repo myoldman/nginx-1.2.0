@@ -398,7 +398,8 @@ void request_callback(struct evhttp_request *req, void *arg)
 	        const char * result = evhttp_find_header(req->input_headers,"result");
 			if(result == NULL) {
 				printf("result is null\r\n");
-				event_base_loopexit(ctx->base, 0); 
+				ctx->ok = 0;
+				event_base_loopexit(ctx->base, 0);
 	        	break;
 			}
 			
