@@ -466,6 +466,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 	    default:  
 	        /* FAILURE */  
 			printf("http request failed \n");
+			ctx->server_down = 1;
 	        event_base_loopexit(ctx->base, 0);  
 	        return;  
     }  
