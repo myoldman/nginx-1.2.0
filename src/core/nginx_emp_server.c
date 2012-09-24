@@ -375,6 +375,8 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			strcpy(srv->emp_host, server_addr);
 			sprintf(srv->emp_port,"%d",port);
 			srv->status = alive;
+			pthread_mutex_init(&srv->mutex, NULL);
+  			pthread_cond_init(&srv->cond, NULL);
 			srv->next = proxy_config_process->serverlist;
 		    proxy_config_process->serverlist = srv;
 		    proxy_config_process->svr_n++;
@@ -397,6 +399,9 @@ ngx_emp_server_core_process_exit(ngx_cycle_t *cycle) {
 	emp_server_t *temp;
 	server = proxy_config_process->serverlist;
 	while(server) {
+		pthread_mutex_lock(&server->mutex);
+ 	    pthread_cond_signal(&server->cond);
+ 	    pthread_mutex_unlock(&server->mutex);
 		pthread_join(server->heart_beat_thread, NULL);
 		server->heart_beat_thread = 0;
 		temp = server;
@@ -530,6 +535,9 @@ static void *heart_beat_thread(void *arg) {
 	}
 
     emp_server_t *server = (emp_server_t*)arg;
+	struct timeval now;
+  	struct timespec outtime;
+	pthread_mutex_lock(&server->mutex);
 	while(proxy_config_process->heart_beat_running){
 		char request_uri[128];
 		printf("heart beat @ %s:%s on process %d \n",
@@ -546,8 +554,12 @@ static void *heart_beat_thread(void *arg) {
 			server->status = alive;
 		}
 		context_free(ctx);
-		ms_sleep(proxy_config_process->retryinterval);
+	    gettimeofday(&now, NULL);
+	    outtime.tv_sec = now.tv_sec + proxy_config_process->retryinterval / 1000000;
+	    outtime.tv_nsec = now.tv_usec * 1000;
+	    pthread_cond_timedwait(&server->cond, &server->mutex, &outtime);
 	}
+	pthread_mutex_unlock(&server->mutex);
 
 	printf("heart beat ended\r\n");
 

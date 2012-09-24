@@ -56,6 +56,8 @@ typedef struct emp_server_s{
   char emp_port[10];
   server_status_e status;
   int type; // 1-active, 0-dead
+  pthread_cond_t cond;
+  pthread_mutex_t mutex;
   pthread_t heart_beat_thread;
   struct emp_server_s *next;
 } emp_server_t;
