@@ -25,7 +25,7 @@ typedef struct request_context_s
 } request_context_t; 
 
 int ms_sleep(long ms);
-void create_heart_beat_thread(void *(*func)(void *), void *arg);
+pthread_t create_heart_beat_thread(void *(*func)(void *), void *arg);
 static void *heart_beat_thread(void *arg);
 void request_callback(struct evhttp_request *req, void *arg);  
 int make_request(request_context_t *ctx , 
@@ -47,6 +47,7 @@ static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 // emp server core module
 static ngx_int_t ngx_emp_server_core_module_init(ngx_cycle_t *cycle);
 static ngx_int_t ngx_emp_server_core_process_init(ngx_cycle_t *cycle);
+static ngx_int_t ngx_emp_server_core_process_exit(ngx_cycle_t *cycle);
 static void *ngx_emp_server_core_create_conf(ngx_cycle_t *cycle);
 static char *ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf);
 static char *ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd,    void *conf);
@@ -121,7 +122,7 @@ ngx_module_t  ngx_emp_server_core_module = {
     ngx_emp_server_core_process_init,                /* init process */
     NULL,                                  /* init thread */
     NULL,                                  /* exit thread */
-    NULL,                                  /* exit process */
+    ngx_emp_server_core_process_exit,      /* exit process */
     NULL,                                  /* exit master */
     NGX_MODULE_V1_PADDING
 };
@@ -377,7 +378,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			srv->next = proxy_config_process->serverlist;
 		    proxy_config_process->serverlist = srv;
 		    proxy_config_process->svr_n++;
-			create_heart_beat_thread(heart_beat_thread, svr);
+			srv->heart_beat_thread = create_heart_beat_thread(heart_beat_thread, srv);
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
@@ -386,6 +387,27 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	printf("called:ngx_emp_server_process_init OK\n");
     return NGX_OK;
 }
+
+static ngx_int_t
+ngx_emp_server_core_process_exit(ngx_cycle_t *cycle) {
+	printf("called:ngx_emp_server_core_process_exit\n");
+
+	proxy_config_process->heart_beat_running = 0;
+	emp_server_t *server;
+	emp_server_t *temp;
+	server = proxy_config_process->serverlist;
+	while(server) {
+		pthread_join(server->heart_beat_thread);
+		server->heart_beat_thread = 0;
+		temp = server;
+		server = server->next;
+		free(temp);
+	}
+
+	printf("called:ngx_emp_server_core_process_exit OK\n");
+    return NGX_OK;
+}
+
 
 int ms_sleep(long ms) {
     struct timeval tv;
@@ -518,11 +540,16 @@ static void *heart_beat_thread(void *arg) {
 			return 1;
 		}
 		event_base_dispatch(ctx->base);
-		if(ctx->server_down)
+		if(ctx->server_down) {
 			server->status = dead;
+		} else {
+			server->status = alive;
+		}
 		context_free(ctx);
 		ms_sleep(proxy_config_process->retryinterval);
 	}
+
+	printf("heart beat ended\r\n");
 
     return NULL;
 }
@@ -535,7 +562,7 @@ static void *heart_beat_thread(void *arg) {
  * @param   arg
  *
  ************************************************************/
-void create_heart_beat_thread(void *(*func)(void *), void *arg) {
+pthread_t create_heart_beat_thread(void *(*func)(void *), void *arg) {
     pthread_t       thread;
     pthread_attr_t  attr;
     int             ret;
@@ -545,8 +572,9 @@ void create_heart_beat_thread(void *(*func)(void *), void *arg) {
     if ((ret = pthread_create(&thread, &attr, func, arg)) != 0) {
         fprintf(stderr, "Can't create thread: %s\n",
                 strerror(ret));
-        exit(1);
+        return 0;
     }
+	return thread;
 }
 
 emp_server_t *round_robin_select_server()

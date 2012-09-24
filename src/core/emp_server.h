@@ -56,6 +56,7 @@ typedef struct emp_server_s{
   char emp_port[10];
   server_status_e status;
   int type; // 1-active, 0-dead
+  pthread_t heart_beat_thread;
   struct emp_server_s *next;
 } emp_server_t;
 
@@ -69,8 +70,7 @@ typedef struct{
   int debug_level;
   
   int svr_n;
-  int last_select;
-  pthread_t  heart_beat_thread;
+  int last_select;
   int heart_beat_running;
 } proxy_config_t;
 
