@@ -483,6 +483,7 @@ emp_server_t *round_robin_select_server()
 		rr_server = proxy_config_process->serverlist;
 		for(i = 0; i< proxy_config_process->last_select; i++)
 			rr_server = rr_server->next;
+		return rr_server;
 	} while (j != proxy_config_process->last_select);
 	return NULL;
 }
