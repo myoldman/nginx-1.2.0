@@ -382,13 +382,12 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 }
  
 void request_callback(struct evhttp_request *req, void *arg)  
-{  
+{	
+    request_context_t *ctx = (request_context_t *)arg;
 	if(req == NULL) {
 		event_base_loopexit(ctx->base, 0);  
 	    return; 
 	}
-		
-    request_context_t *ctx = (request_context_t *)arg;
     //struct evhttp_uri *new_uri = NULL;  
     //const char *new_location = NULL;  
     /* response is ready */  
