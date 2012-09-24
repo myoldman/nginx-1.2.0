@@ -351,7 +351,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	proxy_config_process = NULL;
 	proxy_config_process = malloc(sizeof(proxy_config_t));
 	memset(proxy_config_process, 0, sizeof(proxy_config_t));
-	proxy_config_process->retryinterval = 5000000;
+	proxy_config_process->retryinterval = 10000000;
 	proxy_config_process->maxretries = 3;
 	strcpy(proxy_config_process->log_facility, "LOG_LOCAL1");
 	proxy_config_process->log_stderr = 1;
@@ -460,6 +460,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 	        break;  
 	    default:  
 	        /* FAILURE */  
+			printf("http request failed \n");
 	        event_base_loopexit(ctx->base, 0);  
 	        return;  
     }  
