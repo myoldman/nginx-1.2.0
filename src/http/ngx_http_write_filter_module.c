@@ -121,8 +121,16 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         cl->buf = ln->buf;
         *ll = cl;
         ll = &cl->next;
-		if(!r->chunked && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 0) {
-			printf("action1 is %s \n", cl->buf->pos);
+		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 0) {
+			u_char *p;			
+			p = cl->buf->pos;			
+			 while(p != cl->buf->last) {				
+			 	p++;				
+				if(*p != CR && *p != LF && *p != '\0'){					
+					printf("%c", *p);
+				}			
+			 }
+			 printf("\n");
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
