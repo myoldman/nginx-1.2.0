@@ -125,8 +125,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 FILE *fp;			
 		 char filename[64] = {0};		
-		 setlocale(LC_ALL,"zh_CN.gb18030");
-		 sprintf(filename, "%ld%d", r->start_sec, r->start_msec);			
+		 sprintf(filename, "%ld%d.txt", r->start_sec, r->start_msec);			
 		 fp=fopen(filename,"at");
 			u_char *p;			
 			p = cl->buf->pos;			
