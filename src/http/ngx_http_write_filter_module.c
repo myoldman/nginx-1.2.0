@@ -121,7 +121,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         cl->buf = ln->buf;
         *ll = cl;
         ll = &cl->next;
-		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 0) {
+		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 FILE *fp;			
 		 char filename[64] = {0};			
 		 sprintf(filename, "%ld%d", r->start_sec, r->start_msec);			
