@@ -130,9 +130,9 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			p = cl->buf->pos;			
 			 while(p != cl->buf->last) {				
 			 	p++;				
-				if(*p != CR && *p != LF && *p != '\0'){					
+				//if(*p != CR && *p != LF && *p != '\0'){					
 					fputc(*p,fp);
-				}			
+				//}			
 			 }
 			 //printf("\n");
 			 fclose(fp);
