@@ -167,9 +167,9 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     ngx_log_debug3(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter: l:%d f:%d s:%O", last, flush, size);
 	for (cl = r->out; cl; cl = cl->next) {
-		printf("action is %s \n", c->log->action);
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 0) {
-		 ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
+			printf("action is %s \n", c->log->action);
+		 	ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "my write new buf t:%d f:%d %p, pos %p, size: %z "
                        "file: %O, size: %z",
                        cl->buf->temporary, cl->buf->in_file,
