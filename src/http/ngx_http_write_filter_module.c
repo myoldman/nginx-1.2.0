@@ -9,6 +9,7 @@
 #include <ngx_core.h>
 #include <ngx_http.h>
 #include <locale.h>
+#include <zlib.h>
 
 
 static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
