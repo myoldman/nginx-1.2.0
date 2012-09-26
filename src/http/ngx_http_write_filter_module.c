@@ -11,6 +11,28 @@
 #include <locale.h>
 
 
+static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
+{
+        z_stream d_stream;
+        int result;
+
+        memset(bufout, '\0', lenout);
+        d_stream.zalloc = NULL;
+        d_stream.zfree  = NULL;
+        d_stream.opaque = NULL;
+
+        result = inflateInit2(&d_stream, MAX_WBITS + 16);
+        d_stream.next_in   = (Byte*)bufin;
+        d_stream.avail_in  = lenin;
+        d_stream.next_out  = (Byte*)bufout;
+        d_stream.avail_out = lenout;
+
+        inflate(&d_stream, Z_SYNC_FLUSH);
+        inflateEnd(&d_stream);
+        return 0;
+}
+
+
 static ngx_int_t ngx_http_write_filter_init(ngx_conf_t *cf);
 
 
@@ -123,19 +145,13 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         *ll = cl;
         ll = &cl->next;
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
+			 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
+			 gzip_uncompress(cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
 			 FILE *fp;			
-		 char filename[64] = {0};		
-		 sprintf(filename, "%ld%d.txt", r->start_sec, r->start_msec);			
-		 fp=fopen(filename,"at");
-			u_char *p;			
-			p = cl->buf->pos;			
-			 while(p != cl->buf->last) {				
-			 	p++;				
-				//if(*p != CR && *p != LF && *p != '\0'){					
-					fputc(*p,fp);
-				//}			
-			 }
-			 //printf("\n");
+			 char filename[64] = {0};		
+			 sprintf(filename, "%ld%d.txt", r->start_sec, r->start_msec);			
+
+			 printf("%s\n",buffer_out);
 			 fclose(fp);
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
