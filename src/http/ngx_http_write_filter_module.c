@@ -151,18 +151,19 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
+			int buf_size = ngx_buf_size(cl->buf);
 			 if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
 			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
 			 {
-				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
-				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
+				 char *buffer_out = (char *)malloc(buf_size * 2);
+				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 2);
 				 printf("chunked response body is %s\n", cl->buf->pos);
 				 free(buffer_out);
 			 } else {
-			 	 u_char *buffer_out = (u_char *)malloc(ngx_buf_size(cl->buf) + 1);
-				 memset(buffer_out, 0, ngx_buf_size(cl->buf) + 1);
-				 ngx_copy(buffer_out, cl->buf->pos, ngx_buf_size(cl->buf));
+			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 1);
+				 memset(buffer_out, 0, buf_size + 1);
+				 ngx_copy(buffer_out, cl->buf->pos, buf_size);
 			 	 printf("unchunked response body is %s\n", buffer_out);
 				 free(buffer_out);
 			 }
