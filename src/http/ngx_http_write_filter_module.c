@@ -145,11 +145,11 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         cl->buf = ln->buf;
         *ll = cl;
         ll = &cl->next;
-		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
+		if(!cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 //if(r->chunked){
 				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
 				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
-				 printf("chunked response body is %d %ld %s\n", cl->buf->in_file, (long)ngx_buf_size(cl->buf), cl->buf->pos);
+				 printf("chunked response body is %d %ld %s\n", cl->buf->temporary, (long)ngx_buf_size(cl->buf), cl->buf->pos);
 				 free(buffer_out);
 			 //} else {
 			 //	 printf("unchunked response body is %s\n",cl->buf->pos);
@@ -202,7 +202,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
                    "http write filter: l:%d f:%d s:%O", last, flush, size);
 	for (cl = r->out; cl; cl = cl->next) {
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
-			printf("action is %d \n", cl->buf->last - cl->buf->pos);
+			//printf("action is %d \n", cl->buf->last - cl->buf->pos);
 		 	ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "my write new buf t:%d f:%d %p, pos %p, size: %z "
                        "file: %O, size: %z",
