@@ -656,7 +656,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			printf("appid is %s\n", header[i].value.data);
 			appid = (char*)header[i].value.data;
 		}
-		printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
+		//printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
 
 	if(appid != NULL) {
