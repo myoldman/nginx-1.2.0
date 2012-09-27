@@ -161,9 +161,9 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				 printf("chunked response body is %s\n", cl->buf->pos);
 				 free(buffer_out);
 			 } else {
-			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 1);
-				 memset(buffer_out, 0, buf_size + 1);
-				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size);
+			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
+				 memset(buffer_out, 0, buf_size + 2);
+				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
 			 	 printf("unchunked response body is %s\n", buffer_out);
 				 free(buffer_out);
 			 }
