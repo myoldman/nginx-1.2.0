@@ -602,7 +602,7 @@ emp_server_t *round_robin_select_server()
 		rr_server = proxy_config_process->serverlist;
 		for(i = 0; i< proxy_config_process->last_select; i++)
 			rr_server = rr_server->next;
-		if(rr_server.status == alive) {
+		if(rr_server->status == alive) {
 			return rr_server;
 		} else {
 			dead_server++;
