@@ -531,7 +531,7 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
       
     const char * host = evhttp_uri_get_host(ctx->uri);
 	const char *query_part = evhttp_uri_get_path(ctx->uri);
-	printf("asd %s\n", query_part);
+
     int port = evhttp_uri_get_port(ctx->uri);  
     ctx->connection = evhttp_connection_base_new(  
         ctx->base, NULL,   
@@ -542,9 +542,9 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 	if(output_data != NULL)
     	evbuffer_add(ctx->req->output_buffer,output_data,len);
 	if(strcmp(method, "get") == 0){
-		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_GET, "/");  
+		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_GET, query_part);  
 	} else {
-		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, "/");  
+		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, query_part);  
 	}
     
     evhttp_add_header(ctx->req->output_headers, "Host", host);  
