@@ -153,7 +153,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
-			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, "gzip"))
+			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
 			 {
 				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
 				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
