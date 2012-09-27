@@ -147,8 +147,8 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         ll = &cl->next;
 		if(r->headers_out.content_type.data)
 			printf("response content type is %s\n", r->headers_out.content_type.data);
-		if(!cl->buf->in_file && ngx_strstrn(r->headers_out.content_type.data, "text", 4) &&
-			strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
+		if(r->headers_out.content_type.data && ngx_strncasecmp(r->headers_out.content_type.data, "text", 4) 
+			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 //if(r->chunked){
 				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
 				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
