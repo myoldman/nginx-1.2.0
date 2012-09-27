@@ -635,7 +635,7 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	return ctx->ok;
 }
 
-ngx_int_t ngx_emp_server_log_body(char *body, char *session_id)
+ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id)
 {
 	char request_uri[128];
 	emp_server_t *rr_server;
@@ -654,7 +654,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, char *session_id)
 				rr_server->emp_host, rr_server->emp_port, getpid());
 	sprintf(request_uri, "http://%s:%s/logBody", rr_server->emp_host, rr_server->emp_port);
 	
-	request_context_t *ctx = create_context(request_uri,"post",NULL, 0 ); 
+	request_context_t *ctx = create_context(request_uri,"post",body, body_length ); 
 	if (!ctx){ 
 		return 1;
 	}
