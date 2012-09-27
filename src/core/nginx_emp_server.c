@@ -42,6 +42,7 @@ emp_server_t *round_robin_select_server();
 //static void *ngx_emp_server_create_conf(ngx_cycle_t *cycle);
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf);
 static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_log_heart_beat_interval(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
 
 // emp server core module
@@ -100,7 +101,12 @@ static ngx_command_t  ngx_emp_server_core_commands[] = {
       0,
       0,
       NULL },
-
+	   { ngx_string("heart_beat_interval"),
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      ngx_log_heart_beat_interval,
+      0,
+      0,
+      NULL },
       ngx_null_command
 };
 
@@ -207,6 +213,21 @@ ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     return NGX_CONF_OK;
 }
 
+static char *
+ngx_log_heart_beat_interval(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+{
+	printf("called:ngx_log_heart_beat_interval\n");
+	ngx_emp_server_conf_t  *escf = conf;
+    ngx_str_t                   *value;
+    ngx_url_t                    u;
+
+	escf->heart_beat_interval = 0;
+    value = cf->args->elts;
+	escf->heart_beat_interval = atoi(value->data);
+	
+	printf("called:ngx_log_heart_beat_interval OK\n");
+    return NGX_CONF_OK;
+}
 
 static char *
 ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
@@ -351,7 +372,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	proxy_config_process = NULL;
 	proxy_config_process = malloc(sizeof(proxy_config_t));
 	memset(proxy_config_process, 0, sizeof(proxy_config_t));
-	proxy_config_process->retryinterval = 10000000;
+	proxy_config_process->retryinterval = ecf->heart_beat_interval;
 	proxy_config_process->maxretries = 3;
 	strcpy(proxy_config_process->log_facility, "LOG_LOCAL1");
 	proxy_config_process->log_stderr = 1;
@@ -380,7 +401,8 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			srv->next = proxy_config_process->serverlist;
 		    proxy_config_process->serverlist = srv;
 		    proxy_config_process->svr_n++;
-			srv->heart_beat_thread = create_heart_beat_thread(heart_beat_thread, srv);
+			if(proxy_config_process->retryinterval > 0)
+				srv->heart_beat_thread = create_heart_beat_thread(heart_beat_thread, srv);
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
@@ -556,7 +578,7 @@ static void *heart_beat_thread(void *arg) {
 		}
 		context_free(ctx);
 	    gettimeofday(&now, NULL);
-	    outtime.tv_sec = now.tv_sec + proxy_config_process->retryinterval / 1000000;
+	    outtime.tv_sec = now.tv_sec + proxy_config_process->retryinterval;
 	    outtime.tv_nsec = now.tv_usec * 1000;
 	    pthread_cond_timedwait(&server->cond, &server->mutex, &outtime);
 	}

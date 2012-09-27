@@ -29,6 +29,7 @@ typedef struct {
 
 typedef struct {
 	u_char       *name;
+	int heart_beat_interval;
 	ngx_array_t   *servers;
 } ngx_emp_server_conf_t;
 
