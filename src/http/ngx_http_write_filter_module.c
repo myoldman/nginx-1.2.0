@@ -147,16 +147,21 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         ll = &cl->next;
 		if(r->headers_out.content_type.data)
 			printf("response content type is %s\n", r->headers_out.content_type.data);
-		if(r->headers_out.content_type.data && !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
+		if(r->headers_out.content_type.data && 
+			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
+			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
-			 //if(r->chunked){
+			 if (r->headers_out.content_encoding 
+			  	&& r->headers_out.content_encoding->value.len
+			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, "gzip"))
+			 {
 				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
 				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
 				 printf("chunked response body is %s\n", cl->buf->pos);
 				 free(buffer_out);
-			 //} else {
-			 //	 printf("unchunked response body is %s\n",cl->buf->pos);
-			 //}
+			 } else {
+			 	 printf("unchunked response body is %s\n",cl->buf->pos);
+			 }
 			 
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
