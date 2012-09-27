@@ -148,12 +148,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
 			 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
-			 //FILE *fp;			
-			 //char filename[64] = {0};		
-			 //sprintf(filename, "%ld%d.txt", r->start_sec, r->start_msec);			
-
-			 printf("%s\n",buffer_out);
-			 //fclose(fp);
+			 printf("response body is %s\n",buffer_out);
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
@@ -200,7 +195,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     ngx_log_debug3(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter: l:%d f:%d s:%O", last, flush, size);
 	for (cl = r->out; cl; cl = cl->next) {
-		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 0) {
+		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			printf("action is %d \n", cl->buf->last - cl->buf->pos);
 		 	ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "my write new buf t:%d f:%d %p, pos %p, size: %z "
