@@ -222,7 +222,7 @@ ngx_log_heart_beat_interval(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 	escf->heart_beat_interval = 0;
     value = cf->args->elts;
-	escf->heart_beat_interval = atoi((char *)value->data);
+	escf->heart_beat_interval = atoi((char *)value[1].data);
 	
 	printf("called:ngx_log_heart_beat_interval %s OK\n", value[1].data);
     return NGX_CONF_OK;
