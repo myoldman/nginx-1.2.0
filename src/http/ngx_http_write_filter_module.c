@@ -158,7 +158,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			 {
 				 char *buffer_out = (char *)malloc(buf_size * 2);
 				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 2);
-				 printf("chunked response body is %s\n", cl->buf->pos);
+				 printf("chunked response body is %s\n", buffer_out);
 				 free(buffer_out);
 			 } else {
 			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
