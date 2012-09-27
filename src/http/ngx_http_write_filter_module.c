@@ -166,7 +166,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				 memset(buffer_out, 0, buf_size + 2);
 				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
 			 	 printf("unchunked response body is %s\n", buffer_out);
-				 ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, NULL);
+				 //ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, NULL);
 				 free(buffer_out);
 			 }
 			 

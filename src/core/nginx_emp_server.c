@@ -592,6 +592,7 @@ pthread_t create_heart_beat_thread(void *(*func)(void *), void *arg) {
 
 emp_server_t *round_robin_select_server()
 {
+	int dead_server = 0;
 	ngx_int_t i,j;
 	emp_server_t *rr_server;
 	j = proxy_config_process->last_select;
@@ -601,8 +602,14 @@ emp_server_t *round_robin_select_server()
 		rr_server = proxy_config_process->serverlist;
 		for(i = 0; i< proxy_config_process->last_select; i++)
 			rr_server = rr_server->next;
-		return rr_server;
-	} while (j != proxy_config_process->last_select);
+		if(rr_server.status == alive) {
+			return rr_server;
+		} else {
+			dead_server++;
+			j = proxy_config_process->last_select;
+			continue;
+		}
+	} while (dead_server != proxy_config_process->svr_n);
 	return NULL;
 }
 
