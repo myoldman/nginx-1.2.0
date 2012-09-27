@@ -146,9 +146,15 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         *ll = cl;
         ll = &cl->next;
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
-			 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
-			 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
-			 printf("response body is %s\n",buffer_out);
+			 if(r->chunked){
+				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
+				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
+				 printf("response body is %s\n",buffer_out);
+				 free(buffer_out);
+			 } else {
+				 printf("response body is %s\n",cl->buf->pos);
+			 }
+			 
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
