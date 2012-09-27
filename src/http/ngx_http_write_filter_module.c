@@ -145,11 +145,13 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         cl->buf = ln->buf;
         *ll = cl;
         ll = &cl->next;
-		if(!cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
+		printf("response content type is %s\n", r->headers_out.content_type.data);
+		if(!cl->buf->in_file && ngx_strstrn(r->headers_out.content_type.data, "text", 4) &&
+			strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 //if(r->chunked){
 				 char *buffer_out = (char *)malloc(ngx_buf_size(cl->buf) * 2);
 				 gzip_uncompress((char*)cl->buf->pos, ngx_buf_size(cl->buf), buffer_out, ngx_buf_size(cl->buf) * 2);
-				 printf("chunked response body is %s %ld %s\n", r->headers_out.content_type.data, (long)ngx_buf_size(cl->buf), cl->buf->pos);
+				 printf("chunked response body is %s\n", cl->buf->pos);
 				 free(buffer_out);
 			 //} else {
 			 //	 printf("unchunked response body is %s\n",cl->buf->pos);
