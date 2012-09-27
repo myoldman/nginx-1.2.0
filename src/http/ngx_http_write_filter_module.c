@@ -159,13 +159,13 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			 {
 				 char *buffer_out = (char *)malloc(buf_size * 3);
 				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 3);
-				 printf("chunked response body is %d %s\n", buf_size,  buffer_out);
+				 //printf("chunked response body is %d %s\n", buf_size,  buffer_out);
 				 free(buffer_out);
 			 } else {
 			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
 				 memset(buffer_out, 0, buf_size + 2);
 				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
-			 	 printf("unchunked response body is %s\n", buffer_out);
+			 	 //printf("unchunked response body is %s\n", buffer_out);
 				 //ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, NULL);
 				 free(buffer_out);
 			 }
