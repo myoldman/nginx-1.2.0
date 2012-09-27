@@ -156,9 +156,9 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			  	&& r->headers_out.content_encoding->value.len
 			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
 			 {
-				 char *buffer_out = (char *)malloc(buf_size * 5);
-				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 5);
-				 printf("chunked response body is %s\n", buffer_out);
+				 char *buffer_out = (char *)malloc(buf_size * 15);
+				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 15);
+				 printf("chunked response body is %d %s\n", buf_size,  buffer_out);
 				 free(buffer_out);
 			 } else {
 			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
