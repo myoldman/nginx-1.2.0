@@ -153,6 +153,8 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			int buf_size = ngx_buf_size(cl->buf);
+			char sessionid[64] = {0};			
+		 	sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);		
 			 if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
 			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
@@ -166,7 +168,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				 memset(buffer_out, 0, buf_size + 2);
 				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
 			 	 //printf("unchunked response body is %s\n", buffer_out);
-				 //ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, NULL);
+				 ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, sessionid);
 				 free(buffer_out);
 			 }
 			 

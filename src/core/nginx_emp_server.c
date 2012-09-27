@@ -686,6 +686,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id)
 	if (!ctx){ 
 		return 1;
 	}
+	evhttp_add_header(ctx->req->output_headers, "session_id", session_id);
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
 	context_free(ctx); 
