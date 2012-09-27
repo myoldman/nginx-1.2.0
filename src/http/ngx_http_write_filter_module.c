@@ -145,7 +145,8 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         cl->buf = ln->buf;
         *ll = cl;
         ll = &cl->next;
-		printf("response content type is %s\n", r->headers_out.content_type.data);
+		if(r->headers_out.content_type.data)
+			printf("response content type is %s\n", r->headers_out.content_type.data);
 		if(!cl->buf->in_file && ngx_strstrn(r->headers_out.content_type.data, "text", 4) &&
 			strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			 //if(r->chunked){
