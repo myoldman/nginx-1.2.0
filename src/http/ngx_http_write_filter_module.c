@@ -150,7 +150,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 		if(r->headers_out.content_type.data && 
 			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
-			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 0) {
+			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			int buf_size = ngx_buf_size(cl->buf);
 			 if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
