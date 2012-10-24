@@ -297,6 +297,7 @@ ngx_emp_server_core_create_conf(ngx_cycle_t *cycle)
     if (ecf == NULL) {
         return NULL;
     }
+	ecf->servers = NULL;
 	ecf->name = (void *) NGX_CONF_UNSET;
 	printf("called:ngx_emp_server_core_create_conf OK\n");
     return ecf;
