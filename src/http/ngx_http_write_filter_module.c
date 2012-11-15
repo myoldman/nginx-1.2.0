@@ -298,55 +298,53 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter limit %O", limit);
 
-    chain = c->send_chain(c, r->out, limit);
-
 	if(r->headers_out.content_type.data && 
 			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
-			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )) {	
+				|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )) {	
 		if (r->headers_out.content_encoding 
-			  && r->headers_out.content_encoding->value.len
-			  && !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
+				 && r->headers_out.content_encoding->value.len
+				 && !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
 		{
 			is_gzip = 1;
 		}
 	}
-
-	/* create the iovec and coalesce the neighbouring bufs */
+	
+		/* create the iovec and coalesce the neighbouring bufs */
 	for (cl = r->out; cl && send < limit; cl = cl->next) {		 
 		if (ngx_buf_special(cl->buf)) {
 			continue;
 		}
-					 
+						 
 #if 1
 		if (!ngx_buf_in_memory(cl->buf) && !cl->buf->in_file) {
 			ngx_debug_point();
 			continue;
 		}
 #endif
-					 
+						 
 		if (!ngx_buf_in_memory_only(cl->buf)) {
-			 break;
+			break;
 		}
-					 
+						 
 		size = cl->buf->last - cl->buf->pos;
-					 
+						 
 		if (send + size > limit) {
 			size = limit - send;
 		}
-
+	
 		printf("http write is %lld \n", size);
 		if(is_gzip) {
 			char *buffer_out = (char *)malloc(size * 3);
 			gzip_uncompress((char*)cl->buf->pos, size, buffer_out, size * 3);
-		 	printf("http write chunked response body is %s\n",  buffer_out);
+			printf("http write chunked response body is %s\n",	buffer_out);
 			free(buffer_out);
 		} else {
 			printf("http write chunked response body is %s \n", cl->buf->pos);
-		}	
+		}
 		send += size;
 	}
 
-					 
+    chain = c->send_chain(c, r->out, limit);			 
 				 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter %p", chain);
