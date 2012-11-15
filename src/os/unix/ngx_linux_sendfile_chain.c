@@ -67,7 +67,7 @@ ngx_linux_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
         limit = NGX_SENDFILE_LIMIT - ngx_pagesize;
     }
 	
-	printf("write length is %lld \n", limit);
+	
 
     send = 0;
 
@@ -316,7 +316,7 @@ ngx_linux_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
             }
 
             sent = rc > 0 ? rc : 0;
-
+			printf("write length is %lld \n", sent);
             ngx_log_debug1(NGX_LOG_DEBUG_EVENT, c->log, 0, "writev: %O", sent);
         }
 
