@@ -41,7 +41,7 @@ static ssize_t sendfilev(int fd, const struct sendfilevec *vec,
 
 
 ngx_chain_t *
-ngx_solaris_sendfilev_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
+ngx_solaris_sendfilev_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, is_gzip)
 {
     int             fd;
     u_char         *prev;

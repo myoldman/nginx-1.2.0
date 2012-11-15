@@ -39,7 +39,7 @@
 
 
 ngx_chain_t *
-ngx_freebsd_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
+ngx_freebsd_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int is_gzip)
 {
     int              rc, flags;
     u_char          *prev;
