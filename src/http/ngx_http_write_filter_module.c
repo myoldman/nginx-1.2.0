@@ -90,6 +90,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     flush = 0;
     last = 0;
 	is_gzip = 0;
+	send  = 0;
     ll = &r->out;
 
     /* find the size, the flush point and the last link of the saved chain */
