@@ -59,14 +59,14 @@ ngx_linux_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
     if (!wev->ready) {
         return in;
     }
-
+	
 
     /* the maximum limit size is 2G-1 - the page size */
 
     if (limit == 0 || limit > (off_t) (NGX_SENDFILE_LIMIT - ngx_pagesize)) {
         limit = NGX_SENDFILE_LIMIT - ngx_pagesize;
     }
-
+	printf("write length is %d \n", size);
 
     send = 0;
 
