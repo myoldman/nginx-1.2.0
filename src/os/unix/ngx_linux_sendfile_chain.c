@@ -149,6 +149,7 @@ ngx_linux_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int 
             if (send + size > limit) {
                 size = limit - send;
             }
+			/*
 			printf("write length is %lld \n", size);
 			if(is_gzip) {
 				char *buffer_out = (char *)malloc(size * 3);
@@ -158,6 +159,7 @@ ngx_linux_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int 
 			} else {
 				printf("http write unchunked response body is %s \n", cl->buf->pos);
 			}
+			*/
             if (prev == cl->buf->pos) {
                 iov->iov_len += (size_t) size;
 
