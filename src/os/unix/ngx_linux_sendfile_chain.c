@@ -67,7 +67,7 @@ ngx_linux_sendfile_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
         limit = NGX_SENDFILE_LIMIT - ngx_pagesize;
     }
 	
-	printf("write length is %d \n", size);
+	printf("write length is %d \n", (int)limit);
 
     send = 0;
 
