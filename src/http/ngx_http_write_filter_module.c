@@ -13,6 +13,28 @@
 #include <nginx_emp_server.h>
 
 
+static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
+{
+        z_stream d_stream;
+        int result;
+
+        memset(bufout, '\0', lenout);
+        d_stream.zalloc = NULL;
+        d_stream.zfree  = NULL;
+        d_stream.opaque = NULL;
+
+        result = inflateInit2(&d_stream, MAX_WBITS + 16);
+        d_stream.next_in   = (Byte*)bufin;
+        d_stream.avail_in  = lenin;
+        d_stream.next_out  = (Byte*)bufout;
+        d_stream.avail_out = lenout;
+
+        inflate(&d_stream, Z_SYNC_FLUSH);
+        inflateEnd(&d_stream);
+        return result;
+}
+
+
 static ngx_int_t ngx_http_write_filter_init(ngx_conf_t *cf);
 
 
