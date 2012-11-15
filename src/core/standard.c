@@ -198,12 +198,12 @@ int _write(connection_t *connection, message_t *message) {
   } else if (res > 0) {
 
   	pthread_mutex_lock(&connection->lock);
-  	write(connection->sfd, msg, strlen(msg));
+  	res = write(connection->sfd, msg, strlen(msg));
 	pthread_mutex_unlock(&connection->lock);
 
   }
 
-  return 0;
+  return res;
 }
 
 int _autodisconnect() {
