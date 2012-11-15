@@ -309,6 +309,12 @@ ngx_http_log_handler(ngx_http_request_t *r)
         ngx_linefeed(p);
 
         ngx_http_log_write(r, &log[l], line, p - line);
+		ngx_chain_t *cl, *ln;
+		for (cl = r->connection->body_out; cl; /* void */) {
+	        ln = cl;
+	        cl = cl->next;
+	        ngx_free_chain(r->connection->pool, ln);
+		}
     }
 
     return NGX_OK;

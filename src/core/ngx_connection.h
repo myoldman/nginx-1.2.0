@@ -179,6 +179,7 @@ struct ngx_connection_s {
 #if (NGX_THREADS)
     ngx_atomic_t        lock;
 #endif
+	ngx_chain_t						 *body_out;//add for emp server
 };
 
 
