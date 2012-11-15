@@ -72,12 +72,13 @@ ngx_module_t  ngx_http_write_filter_module = {
 ngx_int_t
 ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 {
-    off_t                      size, sent, nsent, limit;
+    off_t                      size, sent, nsent, limit, send;
     ngx_uint_t                 last, flush;
     ngx_msec_t                 delay;
     ngx_chain_t               *cl, *ln, **ll, *chain;
     ngx_connection_t          *c;
     ngx_http_core_loc_conf_t  *clcf;
+	ngx_uint_t is_gzip;
 
     c = r->connection;
 
@@ -88,6 +89,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     size = 0;
     flush = 0;
     last = 0;
+	is_gzip = 0;
     ll = &r->out;
 
     /* find the size, the flush point and the last link of the saved chain */
@@ -148,31 +150,6 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
         ll = &cl->next;
 		//if(r->headers_out.content_type.data)
 			//printf("response content type is %s\n", r->headers_out.content_type.data);
-		if(r->headers_out.content_type.data && 
-			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
-			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
-			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
-			int buf_size = ngx_buf_size(cl->buf);
-			char sessionid[64] = {0};			
-		 	sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);		
-			 if (r->headers_out.content_encoding 
-			  	&& r->headers_out.content_encoding->value.len
-			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
-			 {
-				 char *buffer_out = (char *)malloc(buf_size * 3);
-				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 3);
-				 //printf("chunked response body is %d %s\n", buf_size,  buffer_out);
-				 free(buffer_out);
-			 } else {
-			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
-				 memset(buffer_out, 0, buf_size + 2);
-				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
-			 	 //printf("unchunked response body is %s\n", buffer_out);
-				 ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, sessionid);
-				 free(buffer_out);
-			 }
-			 
-		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
                        "file: %O, size: %z",
@@ -217,6 +194,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
     ngx_log_debug3(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter: l:%d f:%d s:%O", last, flush, size);
+	/*
 	for (cl = r->out; cl; cl = cl->next) {
 		if(strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			//printf("action is %d \n", cl->buf->last - cl->buf->pos);
@@ -228,7 +206,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
                        cl->buf->last - cl->buf->pos,
                        cl->buf->file_pos,
                        cl->buf->file_last - cl->buf->file_pos);
-		 /*
+		 
 		 FILE *fp;			
 		 char filename[64] = {0};			
 		 sprintf(filename, "%ld%d", r->start_sec, r->start_msec);			
@@ -242,10 +220,11 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			}			
 		 }
 		 fclose(fp);
-		 */
+		 
 		}
 		
 	}
+	*/
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
     /*
@@ -320,6 +299,54 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
     chain = c->send_chain(c, r->out, limit);
 
+	if(r->headers_out.content_type.data && 
+			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
+			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )) {	
+		if (r->headers_out.content_encoding 
+			  && r->headers_out.content_encoding->value.len
+			  && !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
+		{
+			is_gzip = 1;
+		}
+	}
+
+	/* create the iovec and coalesce the neighbouring bufs */
+	for (cl = in; cl && send < limit; cl = cl->next) {		 
+		if (ngx_buf_special(cl->buf)) {
+			continue;
+		}
+					 
+#if 1
+		if (!ngx_buf_in_memory(cl->buf) && !cl->buf->in_file) {
+			ngx_debug_point();
+			continue;
+		}
+#endif
+					 
+		if (!ngx_buf_in_memory_only(cl->buf)) {
+			 break;
+		}
+					 
+		size = cl->buf->last - cl->buf->pos;
+					 
+		if (send + size > limit) {
+			size = limit - send;
+		}
+
+		printf("http write is %lld \n", size);
+		if(is_gzip) {
+			char *buffer_out = (char *)malloc(size * 3);
+			gzip_uncompress((char*)cl->buf->pos, size, buffer_out, size * 3);
+		 	printf("http write chunked response body is %s\n",  buffer_out);
+			free(buffer_out);
+		} else {
+			printf("http write chunked response body is %s \n", cl->buf->pos);
+		}	
+		send += size;
+	}
+
+					 
+				 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter %p", chain);
 
