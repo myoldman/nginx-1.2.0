@@ -312,7 +312,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 	}
 
 	/* create the iovec and coalesce the neighbouring bufs */
-	for (cl = in; cl && send < limit; cl = cl->next) {		 
+	for (cl = r->out; cl && send < limit; cl = cl->next) {		 
 		if (ngx_buf_special(cl->buf)) {
 			continue;
 		}
