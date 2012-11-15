@@ -310,7 +310,8 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 	}
 	
 		/* create the iovec and coalesce the neighbouring bufs */
-	for (cl = r->out; cl && send < limit; cl = cl->next) {		 
+	for (cl = r->out; cl && send < limit; cl = cl->next) {
+		printf("http write is \n");
 		if (ngx_buf_special(cl->buf)) {
 			continue;
 		}
@@ -332,7 +333,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			size = limit - send;
 		}
 	
-		printf("http write is %lld \n", size);
+		
 		if(is_gzip) {
 			char *buffer_out = (char *)malloc(size * 3);
 			gzip_uncompress((char*)cl->buf->pos, size, buffer_out, size * 3);
