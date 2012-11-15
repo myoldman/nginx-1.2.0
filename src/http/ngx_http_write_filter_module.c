@@ -348,7 +348,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 		send += size;
 	}
 	*/
-    chain = c->send_chain(c, r->out, limit);			 
+    chain = c->send_chain(c, r->out, limit, is_gzip);			 
 				 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter %p", chain);
