@@ -13,6 +13,7 @@
 #include <nginx_emp_server.h>
 
 
+/*
 static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
 {
         z_stream d_stream;
@@ -33,6 +34,7 @@ static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
         inflateEnd(&d_stream);
         return result;
 }
+*/
 
 
 static ngx_int_t ngx_http_write_filter_init(ngx_conf_t *cf);
