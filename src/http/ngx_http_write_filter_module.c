@@ -31,7 +31,7 @@ static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
 
         inflate(&d_stream, Z_SYNC_FLUSH);
         inflateEnd(&d_stream);
-        return 0;
+        return result;
 }
 
 
