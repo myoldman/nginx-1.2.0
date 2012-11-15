@@ -24,7 +24,7 @@ ngx_aio_write(ngx_connection_t *c, u_char *buf, size_t size)
     if (!wev->ready) {
         return NGX_AGAIN;
     }
-
+	printf("write length is %d \n", size);
     ngx_log_debug1(NGX_LOG_DEBUG_EVENT, wev->log, 0,
                    "aio: wev->complete: %d", wev->complete);
 
