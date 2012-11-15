@@ -18,7 +18,7 @@
 
 
 ngx_chain_t *
-ngx_writev_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
+ngx_writev_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int is_gzip)
 {
     u_char        *prev;
     ssize_t        n, size, sent;
