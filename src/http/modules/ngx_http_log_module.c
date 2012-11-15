@@ -313,6 +313,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
 		for (cl = r->connection->body_out; cl; /* void */) {
 	        ln = cl;
 	        cl = cl->next;
+			printf("chunked response body is %s\n",  ln->buf->pos);
 	        ngx_free_chain(r->connection->pool, ln);
 		}
     }
