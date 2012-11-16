@@ -655,10 +655,18 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
 			printf("appid is %s\n", header[i].value.data);
 			appid = (char*)header[i].value.data;
+			printf("appid from header is %s\n", appid);
 		}
-		//printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
-	printf("args is %s \n", r->args.data);
+
+	if (appid == NULL) {
+		 ngx_str_t value;
+		 if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
+		 	appid = (char*)value.data;
+		 }
+		 printf("appid from query string is %s\n", appid);
+	}
+	
 	if(appid != NULL) {
 		ngx_int_t ret = ngx_emp_server_check_appid(appid);
 		if(!ret) {
