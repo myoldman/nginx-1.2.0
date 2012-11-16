@@ -659,6 +659,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	}
 
 	if (appid == NULL) {
+		printf("query string is %s %d\n" , r->args);
 		 ngx_str_t value;
 		 if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
 		 	ngx_cpystrn((u_char *)appid, value.data, value.len);
