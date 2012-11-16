@@ -653,7 +653,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			i = 0;
 		}
 		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
-			ngx_cpystrn(appid, header[i].value.data, header[i].value.len);
+			ngx_cpystrn((u_char *)appid, header[i].value.data, header[i].value.len);
 			printf("appid from header is %s\n", appid);
 		}
 	}
@@ -661,7 +661,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	if (appid == NULL) {
 		 ngx_str_t value;
 		 if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
-		 	ngx_cpystrn(appid, value.data, value.len);
+		 	ngx_cpystrn((u_char *)appid, value.data, value.len);
 		 }
 		 printf("appid from query string is %s\n", appid);
 	}
