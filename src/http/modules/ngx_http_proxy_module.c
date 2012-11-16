@@ -658,7 +658,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		}
 		//printf("header %s value is %s\n", header[i].key.data, header[i].value.data);
 	}
-
+	printf("args is %s \n", r->args.data);
 	if(appid != NULL) {
 		ngx_int_t ret = ngx_emp_server_check_appid(appid);
 		if(!ret) {
