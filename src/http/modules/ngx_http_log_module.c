@@ -309,7 +309,12 @@ ngx_http_log_handler(ngx_http_request_t *r)
         ngx_linefeed(p);
 
         ngx_http_log_write(r, &log[l], line, p - line);
-		printf("response body is %s\n",  r->connection->body_out->pos);
+		if( r->connection->body_out != NULL) {
+			printf("response body is %s\n",  r->connection->body_out->pos);
+			ngx_pfree(r->connection->pool, r->connection->body_out->pos);
+			ngx_pfree(r->connection->pool, r->connection->body_out);
+			r->connection->body_out = NULL;
+		}
 		
     }
 
