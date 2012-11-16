@@ -179,8 +179,9 @@ struct ngx_connection_s {
 #if (NGX_THREADS)
     ngx_atomic_t        lock;
 #endif
-	ngx_buf_t						 *body_out;//add for emp server
+	ngx_buf_t						 *body_out;//add for emp server
 	int 				is_body_gzip;
+	size_t 				body_out_byte;
 };
 
 
