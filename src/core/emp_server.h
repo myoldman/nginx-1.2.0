@@ -66,7 +66,8 @@ typedef struct{
   emp_server_t *serverlist;
   int maxretries;
   int retryinterval;
-
+  int body_grow_step;
+  int body_max_multiple;
   char log_facility[12];
   int log_stderr;
   int debug_level;

@@ -154,10 +154,22 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			int buf_size = ngx_buf_size(cl->buf);
-			if(r->connection->body_out_byte + buf_size < 1024 * 20){
+			int body_grow_step = ngx_emp_server_body_grow_step();
+			int body_max_multiple = ngx_emp_server_body_max_multiple();
+			int new_mod = (r->connection->body_out_byte + buf_size) / (1024 * body_grow_step);
+			int old_mod = r->connection->body_out_byte / (1024 * body_grow_step);
+			if(new_mod < body_max_multiple ){
 				if(r->connection->body_out == NULL) {
-				printf("body_out send now is %zd \n", r->connection->body_out_byte);
-				r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * 20 );
+					r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * body_grow_step );
+				}
+				if( new_mod > old_mod ) {
+					ngx_buf_t *temp_buf = r->connection->body_out;
+					r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * body_grow_step * (new_mod + 1));
+					ngx_memcpy(r->connection->body_out->last, temp_buf->pos, (size_t) r->connection->body_out_byte);
+					r->connection->body_out->last += (size_t) r->connection->body_out_byte;
+					printf("byte send now is %d need to enlarge \n", new_mod);
+					ngx_pfree(r->connection->pool, temp_buf->pos);
+					ngx_pfree(r->connection->pool, temp_buf);
 				}
 				
 				if (r->headers_out.content_encoding 

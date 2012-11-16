@@ -107,6 +107,18 @@ static ngx_command_t  ngx_emp_server_core_commands[] = {
       0,
       0,
       NULL },
+      { ngx_string("body_memory_grow_step"),
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      ngx_log_body_memory_grow_step,
+      0,
+      0,
+      NULL },
+      { ngx_string("body_memory_max_multiple"),
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      ngx_log_body_memory_max_multiple,
+      0,
+      0,
+      NULL },
       ngx_null_command
 };
 
@@ -227,6 +239,38 @@ ngx_log_heart_beat_interval(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	printf("called:ngx_log_heart_beat_interval %s OK\n", value[1].data);
     return NGX_CONF_OK;
 }
+
+static char *
+ngx_log_body_memory_grow_step(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+{
+	printf("called:ngx_log_heart_beat_interval\n");
+	ngx_emp_server_conf_t  *escf = conf;
+    ngx_str_t                   *value;
+
+	escf->heart_beat_interval = 0;
+    value = cf->args->elts;
+	escf->body_memory_grow_step = atoi((char *)value[1].data);
+	
+	printf("called:ngx_log_body_memory_grow_step %s OK\n", value[1].data);
+    return NGX_CONF_OK;
+}
+
+static char *
+ngx_log_body_memory_max_multiple(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+{
+	printf("called:ngx_log_heart_beat_interval\n");
+	ngx_emp_server_conf_t  *escf = conf;
+    ngx_str_t                   *value;
+
+	escf->heart_beat_interval = 0;
+    value = cf->args->elts;
+	escf->body_memory_max_multiple = atoi((char *)value[1].data);
+	
+	printf("called:ngx_log_body_memory_max_multiple %s OK\n", value[1].data);
+    return NGX_CONF_OK;
+}
+
+
 
 static char *
 ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
@@ -373,6 +417,8 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	proxy_config_process = malloc(sizeof(proxy_config_t));
 	memset(proxy_config_process, 0, sizeof(proxy_config_t));
 	proxy_config_process->retryinterval = ecf->heart_beat_interval;
+	proxy_config_process->body_grow_step = ecf->body_memory_grow_step;
+	proxy_config_process->body_max_multiple = ecf->body_memory_max_multiple;
 	proxy_config_process->maxretries = 3;
 	strcpy(proxy_config_process->log_facility, "LOG_LOCAL1");
 	proxy_config_process->log_stderr = 1;
@@ -381,6 +427,10 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	set_log_facility(proxy_config_process->log_facility);
 	set_log_stderr(proxy_config_process->log_stderr);
     set_debug_level(proxy_config_process->debug_level);
+	if(proxy_config_process->body_max_multiple == 0)
+		proxy_config_process->body_max_multiple = 4;
+	if( proxy_config_process->body_grow_step == 0)
+		proxy_config_process->body_grow_step = 20;
 	
     if (ccf->master && ccf->worker_processes > 1) {
     } else {
@@ -665,6 +715,17 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	context_free(ctx); 
 	return ctx->ok;
 }
+
+ngx_int_t ngx_emp_server_body_grow_step()
+{
+	return proxy_config_process->body_grow_step;
+}
+
+ngx_int_t ngx_emp_server_body_max_multiple()
+{
+	return proxy_config_process->body_max_multiple;
+}
+
 
 ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id)
 {

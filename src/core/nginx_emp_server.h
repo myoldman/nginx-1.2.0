@@ -30,11 +30,15 @@ typedef struct {
 typedef struct {
 	u_char       *name;
 	int heart_beat_interval;
+	int body_memory_grow_step;
+	int body_memory_max_multiple;
 	ngx_array_t   *servers;
 } ngx_emp_server_conf_t;
 
 ngx_int_t ngx_emp_server_check_appid(char *app_id);
 ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id);
+ngx_int_t ngx_emp_server_body_grow_step();
+ngx_int_t ngx_emp_server_body_max_multiple();
 
 #endif
 
