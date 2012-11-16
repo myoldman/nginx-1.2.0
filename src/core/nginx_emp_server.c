@@ -43,6 +43,9 @@ emp_server_t *round_robin_select_server();
 static char *ngx_emp_server_init_conf(ngx_cycle_t *cycle, void *conf);
 static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_log_heart_beat_interval(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_log_body_memory_grow_step(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_log_body_memory_max_multiple(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+
 
 
 // emp server core module
