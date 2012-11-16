@@ -154,23 +154,26 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			int buf_size = ngx_buf_size(cl->buf);
-			//char sessionid[64] = {0};
-		 	//sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);
-			if(r->connection->body_out == NULL) {
+			if(r->connection->body_out_byte + buf_size < 1024 * 20){
+				if(r->connection->body_out == NULL) {
 				printf("body_out send now is %zd \n", r->connection->body_out_byte);
 				r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * 20 );
+				}
+				
+				if (r->headers_out.content_encoding 
+				  	&& r->headers_out.content_encoding->value.len
+				  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
+				{
+					r->connection->is_body_gzip = 1;
+				}
+				ngx_memcpy(r->connection->body_out->last, cl->buf->pos, (size_t) buf_size);
+		       	r->connection->body_out->last += (size_t) buf_size;
+				r->connection->body_out_byte += buf_size;
+				printf("byte send now is %zd \n", r->connection->body_out_byte);
+			} else {
+				printf("byte send now is %zd overflow\n", r->connection->body_out_byte + buf_size );
 			}
 			
-			if (r->headers_out.content_encoding 
-			  	&& r->headers_out.content_encoding->value.len
-			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
-			{
-				r->connection->is_body_gzip = 1;
-			}
-			ngx_memcpy(r->connection->body_out->last, cl->buf->pos, (size_t) buf_size);
-	       	r->connection->body_out->last += (size_t) buf_size;
-			r->connection->body_out_byte += buf_size;
-			printf("byte send now is %zd \n", r->connection->body_out_byte);
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
