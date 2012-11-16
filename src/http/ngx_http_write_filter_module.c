@@ -157,6 +157,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			//char sessionid[64] = {0};
 		 	//sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);
 			if(r->connection->body_out == NULL) {
+				printf("body_out send now is %zd \n", r->connection->body_out_byte);
 				r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * 20 );
 			}
 			
