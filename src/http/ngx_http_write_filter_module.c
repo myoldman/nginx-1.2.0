@@ -153,11 +153,21 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			int buf_size = ngx_buf_size(cl->buf);
-			char sessionid[64] = {0};			
-		 	sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);		
-			r->connection->body_out = ngx_alloc_chain_link(r->connection->pool);
+			char sessionid[64] = {0};
+			ngx_chain_t  *pre_chain, *temp_chain,  **next_chain;
+		 	sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);
+			temp_chain = ngx_alloc_chain_link(r->connection->pool);
 			
-			 if (r->headers_out.content_encoding 
+			if(r->connection->body_out == NULL) {
+				r->connection->body_out = temp_chain;
+			} else {
+				for(pre_chain = r->connection->body_out; pre_chain; pre_chain = pre_chain->next) {
+					next_chain = &pre_chain->next;
+				}
+				*next_chain = temp_chain;
+			}
+			
+			if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
 			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
 			 {
@@ -165,18 +175,16 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				 char *buffer_out = (char *)malloc(buf_size * 3);
 				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 3);
 				 printf("chunked response body is %d %s\n", buf_size * 3,  buffer_out);
-				 ngx_buf_t *temp_buf = ngx_create_temp_buf(r->connection->pool, buf_size * 3);
-				 r->connection->body_out->buf = temp_buf;
-				 ngx_memcpy(temp_buf->pos, cl->buf->pos, (size_t) buf_size);
-	       		 temp_buf->pos += (size_t) buf_size;
+				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size * 3);
+				 ngx_memcpy(temp_chain->buf->pos, cl->buf->pos, (size_t) buf_size * 3);
+	       		 temp_chain->buf->pos += (size_t) buf_size * 3;
 				 free(buffer_out);
 			 } else {
-			 	 ngx_buf_t *temp_buf = ngx_create_temp_buf(r->connection->pool, buf_size + 2);
-				 r->connection->body_out->buf = temp_buf;
-				 ngx_memcpy(temp_buf->pos, cl->buf->pos, (size_t) buf_size + 2);
-	       		 temp_buf->pos += (size_t) buf_size + 2;
+				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size);
+				 ngx_memcpy(temp_chain->buf->pos, cl->buf->pos, (size_t) buf_size);
+	       		 temp_chain->buf->pos += (size_t) buf_size;
 			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
-				 memset(buffer_out, 0, buf_size + 2);
+				 memset(buffer_out, 0, buf_size);
 				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
 			 	 printf("unchunked response body is %s\n", buffer_out);
 				 ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, sessionid);
