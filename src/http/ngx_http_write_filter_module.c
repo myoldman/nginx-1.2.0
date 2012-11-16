@@ -166,6 +166,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				}
 				*next_chain = temp_chain;
 			}
+			temp_chain->next = NULL;
 			
 			if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
@@ -174,7 +175,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			 	
 				 char *buffer_out = (char *)malloc(buf_size * 3);
 				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 3);
-				 //printf("chunked response body is %d %s\n", buf_size * 3,  buffer_out);
+				 printf("byte is %d\n", buf_size );
 				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size * 3);
 				 ngx_memcpy(temp_chain->buf->pos, buffer_out, (size_t) buf_size * 3);
 	       		 temp_chain->buf->last += (size_t) buf_size * 3;
