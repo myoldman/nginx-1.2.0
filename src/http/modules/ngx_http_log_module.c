@@ -339,7 +339,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
 				printf("uncompress response body is %s\n",  buffer_out);
 				ngx_pfree(r->connection->pool, buffer_out);
 			} else {
-				printf("response body is %s\n",  r->connection->body_out->pos);
+				//printf("response body is %s\n",  r->connection->body_out->pos);
 			}
 			ngx_pfree(r->connection->pool, r->connection->body_out->pos);
 			ngx_pfree(r->connection->pool, r->connection->body_out);
