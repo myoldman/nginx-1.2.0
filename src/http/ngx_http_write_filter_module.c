@@ -169,7 +169,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			ngx_memcpy(r->connection->body_out->last, cl->buf->pos, (size_t) buf_size);
 	       	r->connection->body_out->last += (size_t) buf_size;
 			r->connection->body_out_byte += buf_size;
-			printf("byte send now is %lld \n", r->connection->body_out_byte);
+			printf("byte send now is %zd \n", r->connection->body_out_byte);
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
