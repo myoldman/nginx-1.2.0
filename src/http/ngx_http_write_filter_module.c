@@ -12,7 +12,7 @@
 #include <zlib.h>
 #include <nginx_emp_server.h>
 
-
+/*
 static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
 {
         z_stream d_stream;
@@ -33,6 +33,7 @@ static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
         inflateEnd(&d_stream);
         return result;
 }
+*/
 
 
 static ngx_int_t ngx_http_write_filter_init(ngx_conf_t *cf);
@@ -153,46 +154,21 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
 			&& !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10) {
 			int buf_size = ngx_buf_size(cl->buf);
-			char sessionid[64] = {0};
-			ngx_chain_t  *pre_chain, *temp_chain,  **next_chain;
-		 	sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);
-			temp_chain = ngx_alloc_chain_link(r->connection->pool);
-			
+			//char sessionid[64] = {0};
+		 	//sprintf(sessionid, "%d%ld%d", getpid(), r->start_sec, r->start_msec);
 			if(r->connection->body_out == NULL) {
-				r->connection->body_out = temp_chain;
-			} else {
-				for(pre_chain = r->connection->body_out; pre_chain; pre_chain = pre_chain->next) {
-					next_chain = &pre_chain->next;
-				}
-				*next_chain = temp_chain;
+				r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * 20 );
 			}
-			temp_chain->next = NULL;
 			
 			if (r->headers_out.content_encoding 
 			  	&& r->headers_out.content_encoding->value.len
 			  	&& !ngx_strcasecmp(r->headers_out.content_encoding->value.data, (u_char *)"gzip"))
-			 {
-			 	
-				 char *buffer_out = (char *)malloc(buf_size * 3);
-				 gzip_uncompress((char*)cl->buf->pos, buf_size, buffer_out, buf_size * 3);
-				 printf("byte is %d\n", buf_size );
-				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size * 3);
-				 ngx_memcpy(temp_chain->buf->pos, buffer_out, (size_t) buf_size * 3);
-	       		 temp_chain->buf->last += (size_t) buf_size * 3;
-				 free(buffer_out);
-			 } else {
-			 	 buf_size++;
-				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size);
-				 ngx_memcpy(temp_chain->buf->pos, cl->buf->pos, (size_t) buf_size);
-	       		 temp_chain->buf->last += (size_t) buf_size;
-			 	 u_char *buffer_out = (u_char *)malloc(buf_size);
-				 memset(buffer_out, 0, buf_size);
-				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size);
-			 	 printf("unchunked response body is %s\n", buffer_out);
-				 ngx_emp_server_log_body((char *)buffer_out, buf_size, sessionid);
-				 free(buffer_out);
-			 }
-			 
+			{
+				r->connection->is_body_gzip = 1;
+			}
+			ngx_memcpy(r->connection->body_out->last, cl->buf->pos, (size_t) buf_size);
+	       	r->connection->body_out->last += (size_t) buf_size;
+			printf("byte send now is %d \n", r->connection->sent);
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
