@@ -334,7 +334,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
         ngx_http_log_write(r, &log[l], line, p - line);
 		if( r->connection->body_out != NULL) {
 			if(r->connection->is_body_gzip) {
-				char *buffer_out = ngx_palloc( r->connection->body_out_byte * 3 );
+				char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
 				gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
 				printf("uncompress response body is %s\n",  buffer_out);
 			} else {
