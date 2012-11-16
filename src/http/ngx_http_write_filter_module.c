@@ -177,17 +177,18 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				 //printf("chunked response body is %d %s\n", buf_size * 3,  buffer_out);
 				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size * 3);
 				 ngx_memcpy(temp_chain->buf->pos, buffer_out, (size_t) buf_size * 3);
-	       		 //temp_chain->buf->pos += (size_t) buf_size * 3;
+	       		 temp_chain->buf->last += (size_t) buf_size * 3;
 				 free(buffer_out);
 			 } else {
+			 	 buf_size++;
 				 temp_chain->buf = ngx_create_temp_buf(r->connection->pool, buf_size);
 				 ngx_memcpy(temp_chain->buf->pos, cl->buf->pos, (size_t) buf_size);
-	       		 temp_chain->buf->pos += (size_t) buf_size;
-			 	 u_char *buffer_out = (u_char *)malloc(buf_size + 2);
+	       		 temp_chain->buf->last += (size_t) buf_size;
+			 	 u_char *buffer_out = (u_char *)malloc(buf_size);
 				 memset(buffer_out, 0, buf_size);
-				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size + 1);
+				 ngx_cpystrn(buffer_out, cl->buf->pos, buf_size);
 			 	 printf("unchunked response body is %s\n", buffer_out);
-				 ngx_emp_server_log_body((char *)buffer_out, buf_size + 2, sessionid);
+				 ngx_emp_server_log_body((char *)buffer_out, buf_size, sessionid);
 				 free(buffer_out);
 			 }
 			 
