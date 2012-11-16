@@ -636,7 +636,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	ngx_list_part_t              *part;
     ngx_table_elt_t              *header;
 	ngx_uint_t i;
-	char *appid = NULL;
+	char *appid = ngx_pcalloc(r->pool, 64);
 	
 	part = &r->headers_in.headers.part;
 	header = part->elts;
@@ -653,8 +653,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			i = 0;
 		}
 		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
-			printf("appid is %s\n", header[i].value.data);
-			appid = (char*)header[i].value.data;
+			ngx_cpystrn(appid, header[i].value.data, header[i].value.len);
 			printf("appid from header is %s\n", appid);
 		}
 	}
@@ -662,7 +661,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	if (appid == NULL) {
 		 ngx_str_t value;
 		 if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
-		 	appid = (char*)value.data;
+		 	ngx_cpystrn(appid, value.data, value.len);
 		 }
 		 printf("appid from query string is %s\n", appid);
 	}
