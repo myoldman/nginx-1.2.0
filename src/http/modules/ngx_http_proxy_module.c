@@ -775,49 +775,6 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	ngx_uint_t i;
 	char *appid = ngx_pcalloc(r->pool, 64);
 	
-	part = &r->headers_in.headers.part;
-	header = part->elts;
-	
-	for (i = 0; /* void */; i++) {
-	
-		if (i >= part->nelts) {
-			if (part->next == NULL) {
-				break;
-			}
-	
-			part = part->next;
-			header = part->elts;
-			i = 0;
-		}
-		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
-			ngx_cpystrn((u_char *)appid, header[i].value.data, header[i].value.len);
-			printf("appid from header is %s\n", appid);
-		}
-	}
-
-	if (strlen(appid) == 0) {
-		 ngx_str_t value;
-		 if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
-		 	ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
-			printf("appid from query string is %s %d\n", appid, value.len);
-		 }
-	}
-
-	if (strlen(appid) == 0) {
-		ngx_str_t value;
-		if (ngx_http_form_input_arg(r, (u_char *) "appid", 5, &value, 0) == NGX_OK) {
-		 	ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
-			printf("appid from body is %s %d\n", appid, value.len);
-		}
-	}
-	
-	if(appid != NULL) {
-		ngx_int_t ret = ngx_emp_server_check_appid(appid);
-		if(!ret) {
-			return NGX_HTTP_INTERNAL_SERVER_ERROR;
-		}
-	}
-	
     if (ngx_http_upstream_create(r) != NGX_OK) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
@@ -889,6 +846,49 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
     if (rc >= NGX_HTTP_SPECIAL_RESPONSE) {
         return rc;
     }
+
+	part = &r->headers_in.headers.part;
+	header = part->elts;
+		
+	for (i = 0; /* void */; i++) {
+		
+		if (i >= part->nelts) {
+			if (part->next == NULL) {
+				break;
+			}
+		
+			part = part->next;
+			header = part->elts;
+			i = 0;
+		}
+		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
+			ngx_cpystrn((u_char *)appid, header[i].value.data, header[i].value.len);
+			printf("appid from header is %s\n", appid);
+		}
+	}
+	
+	if (strlen(appid) == 0) {
+		ngx_str_t value;
+		if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
+			ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
+			printf("appid from query string is %s %d\n", appid, value.len);
+		}
+	}
+	
+	if (strlen(appid) == 0) {
+		ngx_str_t value;
+		if (ngx_http_form_input_arg(r, (u_char *) "appid", 5, &value, 0) == NGX_OK) {
+			ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
+			printf("appid from body is %s %d\n", appid, value.len);
+		}
+	}
+		
+	if(appid != NULL) {
+		ngx_int_t ret = ngx_emp_server_check_appid(appid);
+		if(!ret) {
+			return NGX_HTTP_INTERNAL_SERVER_ERROR;
+		}
+	}
 
     return NGX_DONE;
 }
