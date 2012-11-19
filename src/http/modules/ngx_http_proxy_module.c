@@ -665,7 +665,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			printf("appid from query string is %s %d\n", appid, value.len);
 		 }
 	}
-	printf("body is request_body %s\n", r->request_body->buf->pos);
+	//printf("body is request_body %s\n", r->request_body->buf->pos);
 	
 	if(appid != NULL) {
 		ngx_int_t ret = ngx_emp_server_check_appid(appid);
