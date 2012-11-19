@@ -719,7 +719,7 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
             return NGX_OK;
         }
 
-        dd("found argument name, offset: %d", (int) (p - buf));
+        printf("found argument name, offset: %d", (int) (p - buf));
 
         if ((p == buf || *(p - 1) == '&') && *(p + arg_len) == '=') {
             v = p + arg_len + 1;
