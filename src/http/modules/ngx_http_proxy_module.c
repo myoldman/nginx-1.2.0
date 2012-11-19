@@ -625,6 +625,143 @@ static ngx_path_init_t  ngx_http_proxy_temp_path = {
     ngx_string(NGX_HTTP_PROXY_TEMP_PATH), { 1, 2, 0 }
 };
 
+/* fork from ngx_http_arg.
+ * read argument(s) with name arg_name and length arg_len into value variable,
+ * if multi flag is set, multi arguments with name arg_name will be read and
+ * stored in an ngx_array_t struct, this can be operated by directives in
+ * array-var-nginx-module*/
+static ngx_int_t
+ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
+    ngx_str_t *value, ngx_flag_t multi)
+{
+    u_char              *p, *v, *last, *buf;
+    ngx_chain_t         *cl;
+    size_t               len = 0;
+    ngx_array_t         *array = NULL;
+    ngx_str_t           *s;
+    ngx_buf_t           *b;
+
+    if (multi) {
+        array = ngx_array_create(r->pool, 1, sizeof(ngx_str_t));
+        if (array == NULL) {
+            return NGX_ERROR;
+        }
+        value->data = (u_char *)array;
+        value->len = sizeof(ngx_array_t);
+    } else {
+        value->data = NULL;
+        value->len = 0;
+    }
+
+    /* we read data from r->request_body->bufs */
+    if (r->request_body == NULL || r->request_body->bufs == NULL) {
+        dd("empty rb or empty rb bufs");
+        return NGX_OK;
+    }
+
+    if (r->request_body->bufs->next != NULL) {
+        /* more than one buffer...we should copy the data out... */
+        len = 0;
+        for (cl = r->request_body->bufs; cl; cl = cl->next) {
+            b = cl->buf;
+
+            if (b->in_file) {
+                ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                        "form-input: in-file buffer found. aborted. "
+                        "consider increasing your client_body_buffer_size "
+                        "setting");
+
+                return NGX_OK;
+            }
+
+            len += b->last - b->pos;
+        }
+
+        dd("len=%d", (int) len);
+
+        if (len == 0) {
+            return NGX_OK;
+        }
+
+        buf = ngx_palloc(r->pool, len);
+        if (buf == NULL) {
+            return NGX_ERROR;
+        }
+
+        p = buf;
+        last = p + len;
+
+        for (cl = r->request_body->bufs; cl; cl = cl->next) {
+            p = ngx_copy(p, cl->buf->pos, cl->buf->last - cl->buf->pos);
+        }
+
+        dd("p - buf = %d, last - buf = %d", (int) (p - buf), (int) (last - buf));
+
+        dd("copied buf (len %d): %.*s", (int) len, (int) len, buf);
+
+    } else {
+        dd("XXX one buffer only");
+
+        b = r->request_body->bufs->buf;
+        if (ngx_buf_size(b) == 0) {
+            return NGX_OK;
+        }
+
+        buf = b->pos;
+        last = b->last;
+    }
+
+    for (p = buf; p < last; p++) {
+        /* we need '=' after name, so drop one char from last */
+
+        p = ngx_strlcasestrn(p, last - 1, arg_name, arg_len - 1);
+        if (p == NULL) {
+            return NGX_OK;
+        }
+
+        dd("found argument name, offset: %d", (int) (p - buf));
+
+        if ((p == buf || *(p - 1) == '&') && *(p + arg_len) == '=') {
+            v = p + arg_len + 1;
+            dd("v = %d...", (int) (v - buf));
+
+            dd("buf now (len %d): %.*s",
+                    (int) (last - v), (int) (last - v), v);
+            p = ngx_strlchr(v, last, '&');
+            if (p == NULL) {
+                dd("& not found, pointing it to last...");
+                p = last;
+
+            } else {
+                dd("found &, pointing it to %d...", (int) (p - buf));
+            }
+
+            if (multi) {
+                s = ngx_array_push(array);
+                if (s == NULL) {
+                    return NGX_ERROR;
+                }
+                s->data = v;
+                s->len = p - v;
+                dd("array var:%.*s", (int) s->len, s->data);
+            } else {
+                value->data = v;
+                value->len = p - v;
+                dd("value: [%.*s]", (int) value->len, value->data);
+                return NGX_OK;
+            }
+        }
+    }
+/*
+    if (multi) {
+        value->data = (u_char *) array;
+        value->len = sizeof(ngx_array_t);
+    }
+*/
+    return NGX_OK;
+}
+
+
 
 static ngx_int_t
 ngx_http_proxy_handler(ngx_http_request_t *r)
@@ -665,7 +802,14 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			printf("appid from query string is %s %d\n", appid, value.len);
 		 }
 	}
-	//printf("body is request_body %s\n", r->request_body->buf->pos);
+
+	if (strlen(appid) == 0) {
+		ngx_str_t value;
+		if (ngx_http_form_input_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
+		 	ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
+			printf("appid from body is %s %d\n", appid, value.len);
+		}
+	}
 	
 	if(appid != NULL) {
 		ngx_int_t ret = ngx_emp_server_check_appid(appid);
