@@ -655,7 +655,7 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
 
     /* we read data from r->request_body->bufs */
     if (r->request_body == NULL || r->request_body->bufs == NULL) {
-        printf("empty rb or empty rb bufs");
+        printf("empty rb or empty rb bufs\n");
         return NGX_OK;
     }
 
@@ -677,7 +677,7 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
             len += b->last - b->pos;
         }
 
-        printf("len=%d", (int) len);
+        printf("len=%d\n", (int) len);
 
         if (len == 0) {
             return NGX_OK;
@@ -695,15 +695,16 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
             p = ngx_copy(p, cl->buf->pos, cl->buf->last - cl->buf->pos);
         }
 
-        printf("p - buf = %d, last - buf = %d", (int) (p - buf), (int) (last - buf));
+        printf("p - buf = %d, last - buf = %d\n", (int) (p - buf), (int) (last - buf));
 
-        printf("copied buf (len %d): %.*s", (int) len, (int) len, buf);
+        printf("copied buf (len %d): %.*s\n", (int) len, (int) len, buf);
 
     } else {
-        printf("XXX one buffer only");
+        printf("XXX one buffer only\n");
 
         b = r->request_body->bufs->buf;
         if (ngx_buf_size(b) == 0) {
+			printf("buffer length zero\n");
             return NGX_OK;
         }
 
@@ -719,21 +720,21 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
             return NGX_OK;
         }
 
-        printf("found argument name, offset: %d", (int) (p - buf));
+        printf("found argument name, offset: %d\n", (int) (p - buf));
 
         if ((p == buf || *(p - 1) == '&') && *(p + arg_len) == '=') {
             v = p + arg_len + 1;
-            printf("v = %d...", (int) (v - buf));
+            printf("v = %d...\n", (int) (v - buf));
 
-            printf("buf now (len %d): %.*s",
+            printf("buf now (len %d): %.*s\n",
                     (int) (last - v), (int) (last - v), v);
             p = ngx_strlchr(v, last, '&');
             if (p == NULL) {
-                printf("& not found, pointing it to last...");
+                printf("& not found, pointing it to last...\n");
                 p = last;
 
             } else {
-                printf("found &, pointing it to %d...", (int) (p - buf));
+                printf("found &, pointing it to %d...\n", (int) (p - buf));
             }
 
             if (multi) {
@@ -743,11 +744,11 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
                 }
                 s->data = v;
                 s->len = p - v;
-                printf("array var:%.*s", (int) s->len, s->data);
+                printf("array var:%.*s\n", (int) s->len, s->data);
             } else {
                 value->data = v;
                 value->len = p - v;
-                printf("value: [%.*s]", (int) value->len, value->data);
+                printf("value: [%.*s]\n", (int) value->len, value->data);
                 return NGX_OK;
             }
         }
@@ -883,7 +884,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		}
 	}
 		
-	if(appid != NULL) {
+	if(strlen(appid) != 0) {
 		ngx_int_t ret = ngx_emp_server_check_appid(appid);
 		if(!ret) {
 			return NGX_HTTP_INTERNAL_SERVER_ERROR;
