@@ -337,6 +337,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
 				char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
 				gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
 				printf("uncompress response body is %s\n",  buffer_out);
+				ngx_emp_server_log_body(buffer_out, strlen(buffer_out), "test");
 				ngx_pfree(r->connection->pool, buffer_out);
 			} else {
 				//printf("response body is %s\n",  r->connection->body_out->pos);
