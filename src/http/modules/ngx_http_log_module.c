@@ -9,7 +9,7 @@
 #include <ngx_core.h>
 #include <ngx_http.h>
 #include <zlib.h>
-
+#include <nginx_emp_server.h>
 
 
 typedef struct ngx_http_log_op_s  ngx_http_log_op_t;
