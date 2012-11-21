@@ -19,7 +19,7 @@ ngx_create_temp_buf(ngx_pool_t *pool, size_t size)
         return NULL;
     }
 
-    b->start = ngx_palloc(pool, size);
+    b->start = ngx_pcalloc(pool, size);
     if (b->start == NULL) {
         return NULL;
     }
