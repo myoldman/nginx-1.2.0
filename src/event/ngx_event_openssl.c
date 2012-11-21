@@ -968,7 +968,7 @@ ngx_ssl_write_handler(ngx_event_t *wev)
  */
 
 ngx_chain_t *
-ngx_ssl_send_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit)
+ngx_ssl_send_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int is_gzip)
 {
     int          n;
     ngx_uint_t   flush;
