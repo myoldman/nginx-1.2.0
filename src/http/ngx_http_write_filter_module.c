@@ -157,7 +157,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 			int buf_size = ngx_buf_size(cl->buf);
 			int body_grow_step = ngx_emp_server_body_grow_step();
 			int body_max_multiple = ngx_emp_server_body_max_multiple();
-			int new_mod = (r->connection->body_out_byte + buf_size) / (1024 * body_grow_step);
+			int new_mod = (r->connection->body_out_byte + buf_size + 1) / (1024 * body_grow_step);
 			int old_mod = r->connection->body_out_byte / (1024 * body_grow_step);
 			if(new_mod < body_max_multiple ){
 				if(r->connection->body_out == NULL) {
