@@ -31,6 +31,7 @@ ngx_writev_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int is_gzip)
     struct iovec  *iov, iovs[NGX_IOVS];
 
     wev = c->write;
+	size = 0;
 
     if (!wev->ready) {
         return in;

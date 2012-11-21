@@ -340,7 +340,6 @@ ngx_http_log_handler(ngx_http_request_t *r)
 				ngx_emp_server_log_body(buffer_out, strlen(buffer_out), "test");
 				ngx_pfree(r->connection->pool, buffer_out);
 			} else {
-				//printf("response body is %s\n",  r->connection->body_out->pos);
 				ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), "test");
 			}
 			ngx_pfree(r->connection->pool, r->connection->body_out->pos);
