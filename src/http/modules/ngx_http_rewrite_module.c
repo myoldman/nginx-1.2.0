@@ -372,7 +372,7 @@ ngx_http_rewrite(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             last = 1;
 
         } else if (ngx_strcmp(value[3].data, "redirect") == 0) {
-            regex->status = NGX_HTTP_MOVED_TEMPORARILY;
+            regex->status = NGX_HTTP_TEMPORARY_REDIRECT;
             regex->redirect = 1;
             last = 1;
 
