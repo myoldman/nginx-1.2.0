@@ -186,6 +186,31 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 				printf("byte send now is %zd overflow\n", r->connection->body_out_byte + buf_size );
 			}
 			
+		} else if(!r->headers_out && !cl->buf->in_file && strcmp( c->log->action, "sending to client") == 0 && ngx_buf_size(cl->buf) > 10){
+			int buf_size = ngx_buf_size(cl->buf);
+			int body_grow_step = ngx_emp_server_body_grow_step();
+			int body_max_multiple = ngx_emp_server_body_max_multiple();
+			int new_mod = (r->connection->body_out_byte + buf_size) / (1024 * body_grow_step);
+			int old_mod = r->connection->body_out_byte / (1024 * body_grow_step);
+			if(new_mod < body_max_multiple ){
+				if(r->connection->body_out == NULL) {
+					r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * body_grow_step );
+				}
+				if( new_mod > old_mod ) {
+					ngx_buf_t *temp_buf = r->connection->body_out;
+					r->connection->body_out = ngx_create_temp_buf(r->connection->pool, 1024 * body_grow_step * (new_mod + 1));
+					ngx_memcpy(r->connection->body_out->last, temp_buf->pos, (size_t) r->connection->body_out_byte);
+					r->connection->body_out->last += (size_t) r->connection->body_out_byte;
+					printf("byte send now is %d need to enlarge \n", new_mod);
+					ngx_pfree(r->connection->pool, temp_buf->pos);
+					ngx_pfree(r->connection->pool, temp_buf);
+				}
+				
+				ngx_memcpy(r->connection->body_out->last, cl->buf->pos, (size_t) buf_size);
+		       	r->connection->body_out->last += (size_t) buf_size;
+				r->connection->body_out_byte += buf_size;
+				printf("byte send now is %zd \n", r->connection->body_out_byte);
+			}
 		}
         ngx_log_debug7(NGX_LOG_DEBUG_EVENT, c->log, 0,
                        "write new buf t:%d f:%d %p, pos %p, size: %z "
