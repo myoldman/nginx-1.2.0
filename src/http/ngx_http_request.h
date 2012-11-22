@@ -552,8 +552,8 @@ struct ngx_http_request_s {
     u_char                           *host_end;
     u_char                           *port_start;
     u_char                           *port_end;
-	u_char							 *app_id;
-	u_char							 *access_token;
+	char							 *app_id;
+	char							 *access_token;
     unsigned                          http_minor:16;
     unsigned                          http_major:16;
 };
