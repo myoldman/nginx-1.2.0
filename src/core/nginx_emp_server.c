@@ -713,7 +713,7 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id, char *uri)
 		return 1;
 	}
 	evhttp_add_header(ctx->req->output_headers, "appid", app_id);
-	evhttp_add_header(ctx->req->output_headers, "url", uri);
+	evhttp_add_header(ctx->req->output_headers, "url1", uri);
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
 	context_free(ctx); 
