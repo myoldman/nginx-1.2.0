@@ -822,7 +822,6 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 //	ngx_list_part_t              *part;
 //    ngx_table_elt_t              *header;
 //	ngx_uint_t i;
-	char *appid = ngx_pcalloc(r->pool, 64);
 	
     if (ngx_http_upstream_create(r) != NGX_OK) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
@@ -896,7 +895,10 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
         return rc;
     }
 	
-	ngx_emp_server_get_arg(r, "app_id", 6, "app-id", 6 , appid);
+	r->app_id = ngx_pcalloc(r->pool, 64);
+	r->access_token = ngx_pcalloc(r->pool, 128);
+	ngx_emp_server_get_arg(r, "app_id", 6, "app-id", 6 , r->app_id);
+	ngx_emp_server_get_arg(r, "access_token", 12, "access-token", 12 , r->access_token);
 	
 	//printf("uri is %s %d\n", r->uri.data, r->uri.len);
 		
