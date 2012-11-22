@@ -338,11 +338,11 @@ ngx_http_log_handler(ngx_http_request_t *r)
 			if(r->connection->is_body_gzip) {
 				char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
 				gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
-				printf("uncompress response body is %s\n",  buffer_out);
+				//printf("uncompress response body is %s\n",  buffer_out);
 				ngx_emp_server_log_body(buffer_out, strlen(buffer_out), "test");
 				ngx_pfree(r->connection->pool, buffer_out);
 			} else {
-				printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
+				//printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
 				ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), "test");
 			}
 			ngx_pfree(r->connection->pool, r->connection->body_out->pos);
