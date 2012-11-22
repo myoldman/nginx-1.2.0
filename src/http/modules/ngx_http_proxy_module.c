@@ -784,7 +784,7 @@ ngx_emp_server_get_arg(ngx_http_request_t *r,
 			i = 0;
 		}
 		if(ngx_strncasecmp(header[i].key.data, (u_char *) arg_name, arg_name_len) == 0 
-			|| ngx_strncasecmp(header[i].key.data, (u_char *) arg_name_alter, arg_name_alter_len)) {
+			|| ngx_strncasecmp(header[i].key.data, (u_char *) arg_name_alter, arg_name_alter_len) == 0) {
 			ngx_cpystrn((u_char *)arg_value, header[i].value.data, header[i].value.len);
 			printf("%s from header is %s\n", arg_name, arg_value);
 		}
@@ -795,7 +795,7 @@ ngx_emp_server_get_arg(ngx_http_request_t *r,
 	if (strlen(arg_value) == 0) {
 		ngx_str_t value;
 		if (ngx_http_arg(r, (u_char *) arg_name, arg_name_len, &value) == NGX_OK
-			|| ngx_http_arg(r, (u_char *) arg_name_alter, arg_name_alter_len, &value)) {
+			|| ngx_http_arg(r, (u_char *) arg_name_alter, arg_name_alter_len, &value) == NGX_OK) {
 			ngx_cpystrn((u_char *)arg_value, value.data, value.len + 1);
 			printf("%s from query string is %s %d\n", arg_name, arg_value, value.len);
 		}
