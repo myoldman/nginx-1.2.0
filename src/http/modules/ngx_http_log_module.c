@@ -335,7 +335,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
 
     }
 
-	if(r->app_id && strlen(r->app_id) != 0 && r->connection->body_out != NULL) {
+	if(r->app_id && strlen((const char*)r->app_id) != 0 && r->connection->body_out != NULL) {
 		//r->connection->body_out->last++;
 		*r->connection->body_out->last = '\0';
 		if(r->connection->is_body_gzip) {
