@@ -762,6 +762,54 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
     return NGX_OK;
 }
 
+static ngx_int_t
+ngx_emp_server_get_arg(ngx_http_request_t *r, 
+	char *arg_name, size_t arg_name_len, 
+	char *arg_name_alter, size_t arg_name_alter_len, char *arg_value) {
+	ngx_uint_t i;
+	ngx_list_part_t              *part;
+    ngx_table_elt_t              *header;
+	part = &r->headers_in.headers.part;
+	header = part->elts;
+		
+	for (i = 0; /* void */; i++) {
+		
+		if (i >= part->nelts) {
+			if (part->next == NULL) {
+				break;
+			}
+		
+			part = part->next;
+			header = part->elts;
+			i = 0;
+		}
+		if(ngx_strncasecmp(header[i].key.data, (u_char *) arg_name, arg_name_len) == 0 
+			|| ngx_strncasecmp(header[i].key.data, (u_char *) arg_name_alter, arg_name_alter_len)) {
+			ngx_cpystrn((u_char *)arg_value, header[i].value.data, header[i].value.len);
+			printf("%s from header is %s\n", arg_name, arg_value);
+		}
+	}
+
+	
+	
+	if (strlen(arg_value) == 0) {
+		ngx_str_t value;
+		if (ngx_http_arg(r, (u_char *) arg_name, arg_name_len, &value) == NGX_OK
+			|| ngx_http_arg(r, (u_char *) arg_name_alter, arg_name_alter_len, &value)) {
+			ngx_cpystrn((u_char *)arg_value, value.data, value.len + 1);
+			printf("%s from query string is %s %d\n", arg_name, arg_value, value.len);
+		}
+	}
+	
+	if (strlen(arg_value) == 0) {
+		ngx_str_t value;
+		if (ngx_http_form_input_arg(r, (u_char *) arg_name, arg_name_len, &value, 0) == NGX_OK
+			|| ngx_http_form_input_arg(r, (u_char *) arg_name_alter, arg_name_alter_len, &value, 0) == NGX_OK) {
+			ngx_cpystrn((u_char *)arg_value, value.data, value.len + 1);
+			printf("%s from body is %s %d\n", arg_name, arg_value, value.len);
+		}
+	}
+}
 
 
 static ngx_int_t
@@ -847,43 +895,9 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
     if (rc >= NGX_HTTP_SPECIAL_RESPONSE) {
         return rc;
     }
-
-	part = &r->headers_in.headers.part;
-	header = part->elts;
-		
-	for (i = 0; /* void */; i++) {
-		
-		if (i >= part->nelts) {
-			if (part->next == NULL) {
-				break;
-			}
-		
-			part = part->next;
-			header = part->elts;
-			i = 0;
-		}
-		if(ngx_strncasecmp(header[i].key.data, (u_char *) "APPID", 5) == 0) {
-			ngx_cpystrn((u_char *)appid, header[i].value.data, header[i].value.len);
-			printf("appid from header is %s\n", appid);
-		}
-	}
 	
-	if (strlen(appid) == 0) {
-		ngx_str_t value;
-		if (ngx_http_arg(r, (u_char *) "appid", 5, &value) == NGX_OK) {
-			ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
-			printf("appid from query string is %s %d\n", appid, value.len);
-		}
-	}
+	ngx_emp_server_get_arg(r, "app_id", 6, "app-id", 6 , appid);
 	
-	if (strlen(appid) == 0) {
-		ngx_str_t value;
-		if (ngx_http_form_input_arg(r, (u_char *) "appid", 5, &value, 0) == NGX_OK) {
-			ngx_cpystrn((u_char *)appid, value.data, value.len + 1);
-			printf("appid from body is %s %d\n", appid, value.len);
-		}
-	}
-
 	//printf("uri is %s %d\n", r->uri.data, r->uri.len);
 		
 	if(strlen(appid) != 0) {

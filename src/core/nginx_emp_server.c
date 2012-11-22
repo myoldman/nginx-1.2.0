@@ -517,16 +517,16 @@ void request_callback(struct evhttp_request *req, void *arg)
 	         * Response is received. No futher handling is required. 
 	         * Finish 
 	         */  
-	        const char * result = evhttp_find_header(req->input_headers,"result");
+	        const char * result = evhttp_find_header(req->input_headers,"res_code");
 			if(result == NULL) {
-				printf("result is null\r\n");
+				printf("res_code is null\r\n");
 				ctx->ok = 0;
 				event_base_loopexit(ctx->base, 0);
 	        	break;
 			}
 			
-			printf("result:%s \n",result);
-	        if( strcmp( result,"OK") == 0 ){  
+			printf("res_code:%s \n",result);
+	        if( strcmp( result,"0") == 0 ){  
 	            ctx->ok = 1;    
 	        }else{  
 	            ctx->ok = 0;     
