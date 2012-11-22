@@ -883,9 +883,11 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 			printf("appid from body is %s %d\n", appid, value.len);
 		}
 	}
+
+	printf("uri is %s \n", r->uri.data);
 		
 	if(strlen(appid) != 0) {
-		ngx_int_t ret = ngx_emp_server_check_appid(appid);
+		ngx_int_t ret = ngx_emp_server_check_appid(appid, r->uri.data);
 		if(!ret) {
 			return NGX_HTTP_INTERNAL_SERVER_ERROR;
 		}

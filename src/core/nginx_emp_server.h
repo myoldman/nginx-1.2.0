@@ -35,7 +35,7 @@ typedef struct {
 	ngx_array_t   *servers;
 } ngx_emp_server_conf_t;
 
-ngx_int_t ngx_emp_server_check_appid(char *app_id);
+ngx_int_t ngx_emp_server_check_appid(char *app_id, char *uri);
 ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id);
 ngx_int_t ngx_emp_server_body_grow_step();
 ngx_int_t ngx_emp_server_body_max_multiple();

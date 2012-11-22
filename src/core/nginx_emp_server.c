@@ -690,7 +690,7 @@ emp_server_t *round_robin_select_server()
 	return NULL;
 }
 
-ngx_int_t ngx_emp_server_check_appid(char *app_id)
+ngx_int_t ngx_emp_server_check_appid(char *app_id, char *uri)
 {
 	char request_uri[128];
 	emp_server_t *rr_server;
@@ -707,12 +707,13 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id)
 	
 	printf("check appid %s @ %s:%s on process %d \n", app_id,
 				rr_server->emp_host, rr_server->emp_port, getpid());
-	sprintf(request_uri, "http://%s:%s/checkAppId", rr_server->emp_host, rr_server->emp_port);
-	request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
+	sprintf(request_uri, "http://%s:%s/NGINX/api_verify", rr_server->emp_host, rr_server->emp_port);
+	request_context_t *ctx = create_context(request_uri,"post",NULL, 0 ); 
 	if (!ctx){ 
 		return 1;
 	}
 	evhttp_add_header(ctx->req->output_headers, "appid", app_id);
+	evhttp_add_header(ctx->req->output_headers, "url", uri);
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
 	context_free(ctx); 
