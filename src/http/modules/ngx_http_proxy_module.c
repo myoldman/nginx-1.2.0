@@ -884,7 +884,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		}
 	}
 
-	printf("uri is %s %d\n", r->uri.data, r->uri.len);
+	//printf("uri is %s %d\n", r->uri.data, r->uri.len);
 		
 	if(strlen(appid) != 0) {
 		char uri[256] = {0};
