@@ -762,7 +762,7 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
     return NGX_OK;
 }
 
-static ngx_int_t
+static void
 ngx_emp_server_get_arg(ngx_http_request_t *r, 
 	char *arg_name, size_t arg_name_len, 
 	char *arg_name_alter, size_t arg_name_alter_len, char *arg_value) {
@@ -819,9 +819,9 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
     ngx_http_upstream_t        *u;
     ngx_http_proxy_ctx_t       *ctx;
     ngx_http_proxy_loc_conf_t  *plcf;
-	ngx_list_part_t              *part;
-    ngx_table_elt_t              *header;
-	ngx_uint_t i;
+//	ngx_list_part_t              *part;
+//    ngx_table_elt_t              *header;
+//	ngx_uint_t i;
 	char *appid = ngx_pcalloc(r->pool, 64);
 	
     if (ngx_http_upstream_create(r) != NGX_OK) {
