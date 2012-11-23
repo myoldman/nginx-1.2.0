@@ -554,6 +554,7 @@ struct ngx_http_request_s {
     u_char                           *port_end;
 	char							 *app_id;
 	char							 *access_token;
+	char							 *verify_code;
     unsigned                          http_minor:16;
     unsigned                          http_major:16;
 };

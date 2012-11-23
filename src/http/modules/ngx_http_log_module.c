@@ -336,7 +336,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
     }
 
 	if(r->app_id && strlen((const char*)r->app_id) != 0 && r->connection->body_out != NULL) {
-		//r->connection->body_out->last++;
+		
 		*r->connection->body_out->last = '\0';
 		if(r->connection->is_body_gzip) {
 			char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );

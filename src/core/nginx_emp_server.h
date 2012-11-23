@@ -35,7 +35,18 @@ typedef struct {
 	ngx_array_t   *servers;
 } ngx_emp_server_conf_t;
 
-ngx_int_t ngx_emp_server_check_appid(char *app_id, char *uri);
+typedef struct  {
+	char app_id[64];
+	char access_token[64];
+	char request_method[8];
+	char time_local[32];
+	char http_xforwarded_for[128];
+	ngx_str_t args;
+	char *verify_body;
+	int verify_body_len;
+}ngx_emp_api_verify_t;
+
+ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *verify_code);
 ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id);
 ngx_int_t ngx_emp_server_body_grow_step();
 ngx_int_t ngx_emp_server_body_max_multiple();

@@ -625,6 +625,83 @@ static ngx_path_init_t  ngx_http_proxy_temp_path = {
     ngx_string(NGX_HTTP_PROXY_TEMP_PATH), { 1, 2, 0 }
 };
 
+static ngx_int_t ngx_emp_base64_encode_request_body(ngx_http_request_t *r, char **verify_body, int *verify_body_length) {
+	u_char 				*p, *last, *buf;
+	ngx_buf_t			*request_body_buf;
+	ngx_chain_t         *cl;
+	size_t               len = 0;
+	//ngx_str_t request_body_before_encode = {0};
+	//ngx_str_t request_body_after_encode = {0};
+	//ngx_str_t request_args_after_encode = {0};
+
+	if (r->request_body->bufs->next != NULL) {
+        /* more than one buffer...we should copy the data out... */
+        len = 0;
+        for (cl = r->request_body->bufs; cl; cl = cl->next) {
+            request_body_buf= cl->buf;
+            if (request_body_buf->in_file) {
+                ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                        "form-input: in-file buffer found. aborted. "
+                        "consider increasing your client_body_buffer_size "
+                        "setting");
+
+                return NGX_OK;
+            }
+
+            len += request_body_buf->last - request_body_buf->pos;
+        }
+
+        printf("request len=%d\n", (int) len);
+
+        if (len == 0) {
+            return NGX_OK;
+        }
+
+        buf = ngx_palloc(r->pool, len);
+        if (buf == NULL) {
+            return NGX_ERROR;
+        }
+
+        p = buf;
+        last = p + len;
+
+        for (cl = r->request_body->bufs; cl; cl = cl->next) {
+            p = ngx_copy(p, cl->buf->pos, cl->buf->last - cl->buf->pos);
+        }
+
+        printf("p - buf = %d, last - buf = %d\n", (int) (p - buf), (int) (last - buf));
+
+        printf("copied buf (len %d): %.*s\n", (int) len, (int) len, buf);
+
+    } else {
+        printf("request body has one buffer only\n");
+        request_body_buf = r->request_body->bufs->buf;
+        if (ngx_buf_size(b) == 0) {
+			printf("buffer length zero\n");
+            return NGX_OK;
+        }
+        buf = request_body_buf->pos;
+        last = request_body_buf->last;
+    }
+
+	if(request_body_buf != NULL) {
+		*verify_body = buf;
+		*verify_body_length = (int) (last - buf);
+		//request_body_before_encode.data = buf->pos;
+		//request_body_before_encode.len = (size_t)(last - buf);
+		//request_body_after_encode.len = ngx_base64_encoded_length(request_body_before_encode.len);
+		//request_body_after_encode.data = ngx_palloc(r->pool, request_body_after_encode.len);
+		//ngx_encode_base64(&request_body_after_encode, &request_body_before_encode);
+	}
+
+	//if(r->args.len > 0) {
+	//	request_args_after_encode.len = ngx_base64_encoded_length(r->args.len);
+	//	request_args_after_encode.data = ngx_palloc(r->pool, request_args_after_encode.len);
+	//	ngx_encode_base64(&request_args_after_encode, &r->args);
+	//}
+	
+}
+
 /* fork from ngx_http_arg.
  * read argument(s) with name arg_name and length arg_len into value variable,
  * if multi flag is set, multi arguments with name arg_name will be read and
@@ -897,6 +974,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	
 	r->app_id = ngx_pcalloc(r->pool, 64);
 	r->access_token = ngx_pcalloc(r->pool, 128);
+	r->verify_code = ngx_pcalloc(r->pool, 32);
 	ngx_emp_server_get_arg(r, "app_id", 6, "app-id", 6 , r->app_id);
 	ngx_emp_server_get_arg(r, "access_token", 12, "access-token", 12 , r->access_token);
 	
@@ -905,7 +983,14 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	if(strlen(r->app_id) != 0) {
 		char uri[256] = {0};
 		ngx_cpystrn((u_char *)uri, r->uri.data, r->uri.len);
-		ngx_int_t ret = ngx_emp_server_check_appid(r->app_id, uri);
+		ngx_emp_api_verify_t  api_verify_t = {0};
+		strcpy(api_verify_t.app_id, r->app_id);
+		strcpy(api_verify_t.access_token, r->access_token);
+		strncpy(api_verify_t.http_xforwarded_for, (char *)r->uri.data, r->uri.len);
+		strncpy(api_verify_t.request_method, (char *)r->method_name.data, r->method_name.len);
+		ngx_emp_base64_encode_request_body(&api_verify_t.verify_body, &api_verify_t.verify_body_len);
+		api_verify_t.args = r->args;
+		ngx_int_t ret = ngx_emp_server_api_verify(&api_verify_t, r->verify_code);
 		if(!ret) {
 			return NGX_HTTP_INTERNAL_SERVER_ERROR;
 		}

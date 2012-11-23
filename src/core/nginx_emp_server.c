@@ -690,9 +690,14 @@ emp_server_t *round_robin_select_server()
 	return NULL;
 }
 
-ngx_int_t ngx_emp_server_check_appid(char *app_id, char *uri)
+ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *verify_code)
 {
 	char request_uri[128];
+
+	if(api_verify == NULL || verify_code == NULL) {
+		printf("parameter error return success\n");
+		return 1;
+	}
 	emp_server_t *rr_server;
 	rr_server = round_robin_select_server();
 	if(rr_server == NULL) {
@@ -705,17 +710,34 @@ ngx_int_t ngx_emp_server_check_appid(char *app_id, char *uri)
 		return 1;
 	}
 	
-	printf("check appid %s @ %s:%s on process %d \n", app_id,
-				rr_server->emp_host, rr_server->emp_port, getpid());
-	sprintf(request_uri, "http://%s:%s/NGINX/api_verify", rr_server->emp_host, rr_server->emp_port);
-	request_context_t *ctx = create_context(request_uri,"post",NULL, 0 ); 
+	printf("check appid %s @ %s:%s on process %d \n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid());
+	
+	if(api_verify->args.len <= 0) {
+		sprintf(request_uri, "http://%s:%s/NGINX/api_verify", rr_server->emp_host, rr_server->emp_port);
+	} else {
+		sprintf(request_uri, "http://%s:%s/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, (char *)api_verify->args.data);
+	}
+	request_context_t *ctx = create_context(request_uri,"post", api_verify->verify_body, api_verify->verify_body_len); 
 	if (!ctx){ 
 		return 1;
 	}
-	evhttp_add_header(ctx->req->output_headers, "appid", app_id);
-	evhttp_add_header(ctx->req->output_headers, "url", uri);
+	evhttp_add_header(ctx->req->output_headers, "appid", api_verify->app_id);
+	evhttp_add_header(ctx->req->output_headers, "access_token", api_verify->access_token);
+	evhttp_add_header(ctx->req->output_headers, "request_method", api_verify->request_method);
+	evhttp_add_header(ctx->req->output_headers, "time_local", api_verify->time_local);
+	evhttp_add_header(ctx->req->output_headers, "http_xforwarded_for", api_verify->http_xforwarded_for);
+	evhttp_add_header(ctx->req->output_headers, "url", api_verify->uri);
+	
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
+	if(ctx->ok) {
+		const char * verify_code_res = evhttp_find_header(ctx->req->input_headers,"verify_code");
+		if(verify_code_res != NULL) {
+			strcpy(verify_code, verify_code_res);
+			printf("verify_code is %s \n", verify_code);
+		}
+	}
+
 	context_free(ctx); 
 	return ctx->ok;
 }
