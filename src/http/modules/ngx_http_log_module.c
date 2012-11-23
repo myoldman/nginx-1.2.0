@@ -345,9 +345,9 @@ ngx_http_log_handler(ngx_http_request_t *r)
 		ngx_http_log_request_time(r, (u_char*)api_log_body_t.request_time, NULL);
 		ngx_http_log_body_bytes_sent(r, (u_char*)api_log_body_t.body_bytes_sent, NULL);
 		ngx_http_log_status(r, (u_char*)api_log_body_t.status, NULL);
-		if(r->headers_out.content_encoding && r->headers_out.content_encoding.value.len > 0) {
-			printf("Content-Encoding: %s\n",r->headers_out.content_encoding.value.data);
-			api_log_body_t->content_encoding.data = r->headers_out.content_encoding.value;
+		if(r->headers_out.content_encoding && r->headers_out.content_encoding->value.len > 0) {
+			printf("Content-Encoding: %s\n",r->headers_out.content_encoding->value.data);
+			api_log_body_t->content_encoding.data = r->headers_out.content_encoding->value;
 		}
 		if(r->headers_out.content_type && r->headers_out.content_type.len > 0) {
 			printf("Content-Type: %s\n",r->headers_out.content_type.data);
@@ -361,7 +361,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
 			//ngx_pfree(r->connection->pool, buffer_out);
 		//} else {
 			//printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
-			ngx_emp_server_log_body(r, (char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), &api_log_body_t);
+			ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), &api_log_body_t);
 		//}
 		ngx_pfree(r->connection->pool, r->connection->body_out->pos);
 		ngx_pfree(r->connection->pool, r->connection->body_out);
