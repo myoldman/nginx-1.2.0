@@ -347,11 +347,11 @@ ngx_http_log_handler(ngx_http_request_t *r)
 		ngx_http_log_status(r, (u_char*)api_log_body_t.status, NULL);
 		if(r->headers_out.content_encoding && r->headers_out.content_encoding->value.len > 0) {
 			printf("Content-Encoding: %s\n",r->headers_out.content_encoding->value.data);
-			api_log_body_t->content_encoding.data = r->headers_out.content_encoding->value;
+			api_log_body_t.content_encoding.data = r->headers_out.content_encoding->value;
 		}
 		if(r->headers_out.content_type && r->headers_out.content_type.len > 0) {
 			printf("Content-Type: %s\n",r->headers_out.content_type.data);
-			api_log_body_t->content_type = r->headers_out.content_type;
+			api_log_body_t.content_type = r->headers_out.content_type;
 		}
 		//if(r->connection->is_body_gzip) {
 			//char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
