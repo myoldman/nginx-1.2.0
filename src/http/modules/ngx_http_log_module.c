@@ -345,19 +345,20 @@ ngx_http_log_handler(ngx_http_request_t *r)
 		ngx_http_log_request_time(r, (u_char*)api_log_body_t.request_time, NULL);
 		ngx_http_log_body_bytes_sent(r, (u_char*)api_log_body_t.body_bytes_sent, NULL);
 		ngx_http_log_status(r, (u_char*)api_log_body_t.status, NULL);
+		if(r->headers_out.content_encoding.len > 0)
+			printf("Content-Encoding: %s\n",r->headers_out.content_encoding.data);
 		if(r->headers_out.content_type.len > 0)
-			printf("Content-Encoding: %s",r->headers_out.content_type.data);
-		
-		if(r->connection->is_body_gzip) {
-			char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
-			gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
+			printf("Content-Type: %s\n",r->headers_out.content_type.data);
+		//if(r->connection->is_body_gzip) {
+			//char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
+			//gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
 			//printf("uncompress response body is %s\n",  buffer_out);
-			ngx_emp_server_log_body(buffer_out, strlen(buffer_out), &api_log_body_t);
-			ngx_pfree(r->connection->pool, buffer_out);
-		} else {
+			//ngx_emp_server_log_body(r, buffer_out, strlen(buffer_out), &api_log_body_t);
+			//ngx_pfree(r->connection->pool, buffer_out);
+		//} else {
 			//printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
-			ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), &api_log_body_t);
-		}
+			ngx_emp_server_log_body(r, (char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), &api_log_body_t);
+		//}
 		ngx_pfree(r->connection->pool, r->connection->body_out->pos);
 		ngx_pfree(r->connection->pool, r->connection->body_out);
 		r->connection->body_out = NULL;
