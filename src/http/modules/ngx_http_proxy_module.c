@@ -995,6 +995,8 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		strcpy(api_verify_t.access_token, r->access_token);
 		strncpy(api_verify_t.http_xforwarded_for, (char *)r->uri.data, r->uri.len);
 		strncpy(api_verify_t.request_method, (char *)r->method_name.data, r->method_name.len);
+		api_verify_t.verify_body = NULL;
+		api_verify_t.verify_body_len = 0;
 		ngx_emp_base64_encode_request_body(r, &api_verify_t.verify_body, &api_verify_t.verify_body_len);
 		api_verify_t.args = r->args;
 		ngx_int_t ret = ngx_emp_server_api_verify(&api_verify_t, r->verify_code);
