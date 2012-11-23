@@ -46,8 +46,15 @@ typedef struct  {
 	int verify_body_len;
 }ngx_emp_api_verify_t;
 
+typedef struct  {
+	char verify_code[32];
+	char request_time[16];
+	char status[8];
+	char body_bytes_sent[16];
+} ngx_emp_api_log_body_t;
+
 ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *verify_code);
-ngx_int_t ngx_emp_server_log_body(char *body, int body_length, char *session_id);
+ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_body_t *log_body_t);
 ngx_int_t ngx_emp_server_body_grow_step();
 ngx_int_t ngx_emp_server_body_max_multiple();
 

@@ -336,17 +336,23 @@ ngx_http_log_handler(ngx_http_request_t *r)
     }
 
 	if(r->app_id && strlen((const char*)r->app_id) != 0 && r->connection->body_out != NULL) {
-		
+		ngx_emp_api_log_body_t api_log_body_t;
+		memset(&api_log_body_t, 0, sizeof(ngx_emp_api_log_body_t));
 		*r->connection->body_out->last = '\0';
+		strcpy(api_log_body_t.verify_code, r->verify_code);
+		ngx_http_log_request_time(r, (u_char*)api_log_body_t.request_time, NULL);
+		ngx_http_log_body_bytes_sent(r, (u_char*)api_log_body_t.body_bytes_sent, NULL);
+		ngx_http_log_status(r, (u_char*)api_log_body_t.status, NULL);
+		
 		if(r->connection->is_body_gzip) {
 			char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
 			gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
 			//printf("uncompress response body is %s\n",  buffer_out);
-			ngx_emp_server_log_body(buffer_out, strlen(buffer_out), "test");
+			ngx_emp_server_log_body(buffer_out, strlen(buffer_out), &api_log_body_t);
 			ngx_pfree(r->connection->pool, buffer_out);
 		} else {
 			//printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
-			ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), "test");
+			ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), &api_log_body_t);
 		}
 		ngx_pfree(r->connection->pool, r->connection->body_out->pos);
 		ngx_pfree(r->connection->pool, r->connection->body_out);
