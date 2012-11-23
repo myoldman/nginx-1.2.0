@@ -986,9 +986,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	
 	//printf("uri is %s %d\n", r->uri.data, r->uri.len);
 		
-	if(strlen(r->app_id) != 0) {
-		char uri[256] = {0};
-		ngx_cpystrn((u_char *)uri, r->uri.data, r->uri.len);
+	if(strlen(r->app_id) != 0 && strlen(r->access_token) != 0) {
 		ngx_emp_api_verify_t  api_verify_t;
 		ngx_memzero(&api_verify_t,sizeof(api_verify_t));
 		strcpy(api_verify_t.app_id, r->app_id);

@@ -335,7 +335,9 @@ ngx_http_log_handler(ngx_http_request_t *r)
 
     }
 
-	if(r->app_id && strlen((const char*)r->app_id) != 0 && r->connection->body_out != NULL) {
+	if(r->app_id && strlen((const char*)r->app_id) != 0 &&
+		r->access_token && strlen((const char*)r->access_token) != 0  &&
+		r->verify_code && strlen((const char*)r->verify_code) != 0 &&  r->connection->body_out != NULL) {
 		ngx_emp_api_log_body_t api_log_body_t;
 		memset(&api_log_body_t, 0, sizeof(ngx_emp_api_log_body_t));
 		*r->connection->body_out->last = '\0';

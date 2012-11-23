@@ -784,7 +784,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 		return 1;
 	}
 	
-	printf("log body %s @ %s:%s on process %d \n",session_id,
+	printf("log body %s @ %s:%s on process %d \n", log_body_t->verify_code,
 				rr_server->emp_host, rr_server->emp_port, getpid());
 	sprintf(request_uri, "http://%s:%s/NGINX/api_log_info", rr_server->emp_host, rr_server->emp_port);
 	
