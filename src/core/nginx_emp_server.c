@@ -714,15 +714,19 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	if(api_verify->args.len <= 0) {
 		sprintf(request_uri, "http://%s:%s/NGINX/api_verify", rr_server->emp_host, rr_server->emp_port);
 	} else {
-		sprintf(request_uri, "http://%s:%s/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, (char *)api_verify->args.data);
+		char args[1024] = {0};
+		strncpy(args, (char *)api_verify->args.data, api_verify->args.len);
+		sprintf(request_uri, "http://%s:%s/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, args);
 	}
+
+	printf("check appid %s @ %s:%s on process %d %s\n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid(), request_uri);
+	
 	request_context_t *ctx = create_context(request_uri,"post", api_verify->verify_body, api_verify->verify_body_len); 
 	if (!ctx){ 
 		return 1;
 	}
 
-	printf("check appid %s @ %s:%s on process %d %s\n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid(), request_uri);
-	
+
 	evhttp_add_header(ctx->req->output_headers, "appid", api_verify->app_id);
 	evhttp_add_header(ctx->req->output_headers, "access_token", api_verify->access_token);
 	evhttp_add_header(ctx->req->output_headers, "request_method", api_verify->request_method);
