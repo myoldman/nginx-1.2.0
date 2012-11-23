@@ -219,6 +219,7 @@ static ngx_http_log_var_t  ngx_http_log_vars[] = {
     { ngx_null_string, 0, NULL }
 };
 
+/*
 static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
 {
         z_stream d_stream;
@@ -239,7 +240,7 @@ static int gzip_uncompress(char *bufin, int lenin, char *bufout, int lenout)
         inflateEnd(&d_stream);
         return result;
 }
-
+*/
 
 ngx_int_t
 ngx_http_log_handler(ngx_http_request_t *r)
@@ -347,9 +348,9 @@ ngx_http_log_handler(ngx_http_request_t *r)
 		ngx_http_log_status(r, (u_char*)api_log_body_t.status, NULL);
 		if(r->headers_out.content_encoding && r->headers_out.content_encoding->value.len > 0) {
 			printf("Content-Encoding: %s\n",r->headers_out.content_encoding->value.data);
-			api_log_body_t.content_encoding.data = r->headers_out.content_encoding->value;
+			api_log_body_t.content_encoding = r->headers_out.content_encoding->value;
 		}
-		if(r->headers_out.content_type && r->headers_out.content_type.len > 0) {
+		if(r->headers_out.content_type.len > 0) {
 			printf("Content-Type: %s\n",r->headers_out.content_type.data);
 			api_log_body_t.content_type = r->headers_out.content_type;
 		}
