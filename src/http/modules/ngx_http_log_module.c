@@ -345,8 +345,8 @@ ngx_http_log_handler(ngx_http_request_t *r)
 		ngx_http_log_request_time(r, (u_char*)api_log_body_t.request_time, NULL);
 		ngx_http_log_body_bytes_sent(r, (u_char*)api_log_body_t.body_bytes_sent, NULL);
 		ngx_http_log_status(r, (u_char*)api_log_body_t.status, NULL);
-		if(r->headers_out.content_type)
-			printf("Content-Encoding: %s",r->headers_out.content_type);
+		if(r->headers_out.content_type.len > 0)
+			printf("Content-Encoding: %s",r->headers_out.content_type.data);
 		
 		if(r->connection->is_body_gzip) {
 			char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
