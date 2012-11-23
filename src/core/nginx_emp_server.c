@@ -534,7 +534,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 	        }  
 			const char * verify_code_res = evhttp_find_header(req->input_headers,"verify_code");
 			if(verify_code_res != NULL) {
-				strcpy(ctx->verify_code_res, verify_code_res);
+				strcpy(ctx->verify_code, verify_code_res);
 			}
 	        event_base_loopexit(ctx->base, 0);  
 	      
@@ -743,7 +743,7 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
 	if(ctx->ok) {
-		strcpy(verify_code, ctx->verify_code_res);
+		strcpy(verify_code, ctx->verify_code);
 		printf("verify_code is %s \n", verify_code);
 	}
 
