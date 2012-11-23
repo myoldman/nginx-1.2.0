@@ -740,7 +740,7 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	}
 
 
-	evhttp_add_header(ctx->req->output_headers, "appid", api_verify->app_id);
+	evhttp_add_header(ctx->req->output_headers, "app_id", api_verify->app_id);
 	evhttp_add_header(ctx->req->output_headers, "access_token", api_verify->access_token);
 	evhttp_add_header(ctx->req->output_headers, "request_method", api_verify->request_method);
 	evhttp_add_header(ctx->req->output_headers, "time_local", api_verify->time_local);
