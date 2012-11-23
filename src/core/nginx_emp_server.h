@@ -4,7 +4,6 @@
 
 #include <ngx_config.h>
 #include <ngx_core.h>
-#include <ngx_http.h>
 
 #define NGX_EMP_SERVER_MODULE      0x544E5646  /* "EVNT" */
 #define NGX_EMP_SERVER_CONF        0x04000000
@@ -52,10 +51,12 @@ typedef struct  {
 	char request_time[16];
 	char status[8];
 	char body_bytes_sent[16];
+	ngx_str_t content_encoding;
+	ngx_str_t content_type;
 } ngx_emp_api_log_body_t;
 
 ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *verify_code);
-ngx_int_t ngx_emp_server_log_body(ngx_http_request_t *r, char *body, int body_length, ngx_emp_api_log_body_t *log_body_t);
+ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_body_t *log_body_t);
 ngx_int_t ngx_emp_server_body_grow_step();
 ngx_int_t ngx_emp_server_body_max_multiple();
 
