@@ -633,6 +633,12 @@ static ngx_int_t ngx_emp_base64_encode_request_body(ngx_http_request_t *r, char 
 	//ngx_str_t request_body_before_encode = {0};
 	//ngx_str_t request_body_after_encode = {0};
 	//ngx_str_t request_args_after_encode = {0};
+	
+	/* we read data from r->request_body->bufs */
+	if (r->request_body == NULL || r->request_body->bufs == NULL) {
+		printf("empty rb or empty rb bufs\n");
+		return NGX_OK;
+	}
 
 	if (r->request_body->bufs->next != NULL) {
         /* more than one buffer...we should copy the data out... */
