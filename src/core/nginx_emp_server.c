@@ -591,8 +591,8 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
       
     const char * host = evhttp_uri_get_host(ctx->uri);
 	const char *query_part = evhttp_uri_get_path(ctx->uri);
-
-    int port = evhttp_uri_get_port(ctx->uri);  
+	printf("query part is %s\n", query_part);
+    int port = evhttp_uri_get_port(ctx->uri); 
     ctx->connection = evhttp_connection_base_new(  
         ctx->base, NULL,   
         host,  
