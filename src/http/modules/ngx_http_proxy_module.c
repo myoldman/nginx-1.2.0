@@ -738,7 +738,7 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
 
     /* we read data from r->request_body->bufs */
     if (r->request_body == NULL || r->request_body->bufs == NULL) {
-        printf("empty rb or empty rb bufs\n");
+        //printf("empty rb or empty rb bufs\n");
         return NGX_OK;
     }
 
