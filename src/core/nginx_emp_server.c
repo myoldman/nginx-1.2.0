@@ -726,7 +726,7 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	evhttp_add_header(ctx->req->output_headers, "request_method", api_verify->request_method);
 	evhttp_add_header(ctx->req->output_headers, "time_local", api_verify->time_local);
 	evhttp_add_header(ctx->req->output_headers, "http_xforwarded_for", api_verify->http_xforwarded_for);
-	evhttp_add_header(ctx->req->output_headers, "url", api_verify->uri);
+	evhttp_add_header(ctx->req->output_headers, "url", api_verify->http_xforwarded_for);
 	
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
