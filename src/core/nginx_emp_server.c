@@ -587,16 +587,19 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 {  
     /* free connections & request */  
     if (ctx->connection)  
-        evhttp_connection_free(ctx->connection);  
-      
-    const char * host = evhttp_uri_get_host(ctx->uri);
-	const char *query_part;
-	struct evkeyvalq httpsqs_http_query;
-	httpsqs_http_query = evhttp_uri_get_query(ctx->uri);
-	evhttp_parse_query_str(query_part, &httpsqs_http_query);  
+        evhttp_connection_free(ctx->connection);
 
-	printf("query part is %s\n", query_part);
+	char uri[1024] = {0};
+    const char * host = evhttp_uri_get_host(ctx->uri);
+	const char *path_part = evhttp_uri_get_path(ctx->uri);
+	const char *query_part = evhttp_uri_get_query(ctx->uri);
     int port = evhttp_uri_get_port(ctx->uri); 
+	if(query_part != NULL) {
+		sprintf(uri, "%s?%s", path_part, query_part);
+	} else {
+		sprintf(uri, "%s", path_part);
+	}
+	
     ctx->connection = evhttp_connection_base_new(  
         ctx->base, NULL,   
         host,  
@@ -606,9 +609,9 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 	if(output_data != NULL)
     	evbuffer_add(ctx->req->output_buffer,output_data,len);
 	if(strcmp(method, "get") == 0){
-		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_GET, query_part);  
+		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_GET, uri);  
 	} else {
-		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, query_part);  
+		evhttp_make_request(ctx->connection, ctx->req, EVHTTP_REQ_POST, uri);  
 	}
     
     evhttp_add_header(ctx->req->output_headers, "Host", host);  
