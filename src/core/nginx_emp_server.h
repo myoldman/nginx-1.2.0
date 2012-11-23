@@ -4,6 +4,7 @@
 
 #include <ngx_config.h>
 #include <ngx_core.h>
+#include <ngx_http.h>
 
 #define NGX_EMP_SERVER_MODULE      0x544E5646  /* "EVNT" */
 #define NGX_EMP_SERVER_CONF        0x04000000
