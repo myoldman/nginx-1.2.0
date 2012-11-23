@@ -625,7 +625,7 @@ static ngx_path_init_t  ngx_http_proxy_temp_path = {
     ngx_string(NGX_HTTP_PROXY_TEMP_PATH), { 1, 2, 0 }
 };
 
-static ngx_int_t ngx_emp_base64_encode_request_body(ngx_http_request_t *r, char **verify_body, int *verify_body_length) {
+static void ngx_emp_base64_encode_request_body(ngx_http_request_t *r, char **verify_body, int *verify_body_length) {
 	u_char 				*p, *last, *buf;
 	ngx_buf_t			*request_body_buf;
 	ngx_chain_t         *cl;
@@ -685,7 +685,7 @@ static ngx_int_t ngx_emp_base64_encode_request_body(ngx_http_request_t *r, char 
     }
 
 	if(request_body_buf != NULL) {
-		*verify_body = buf;
+		*verify_body = (char*)buf;
 		*verify_body_length = (int) (last - buf);
 		//request_body_before_encode.data = buf->pos;
 		//request_body_before_encode.len = (size_t)(last - buf);
