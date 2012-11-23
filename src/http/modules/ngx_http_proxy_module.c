@@ -636,7 +636,7 @@ static ngx_int_t ngx_emp_base64_encode_request_body(ngx_http_request_t *r, char 
 	
 	/* we read data from r->request_body->bufs */
 	if (r->request_body == NULL || r->request_body->bufs == NULL) {
-		printf("empty rb or empty rb bufs\n");
+		//printf("empty rb or empty rb bufs\n");
 		return NGX_OK;
 	}
 
