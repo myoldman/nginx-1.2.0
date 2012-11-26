@@ -355,8 +355,8 @@ ngx_http_log_handler(ngx_http_request_t *r)
 			api_log_body_t.content_type = r->headers_out.content_type;
 		}
 		if(r->connection->is_body_gzip) {
-			char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 2 );
-			gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 2);
+			char *buffer_out = ngx_palloc(r->connection->pool, r->connection->body_out_byte * 3 );
+			gzip_uncompress((char*)r->connection->body_out->pos, r->connection->body_out_byte, buffer_out, r->connection->body_out_byte * 3);
 			//printf("uncompress response body is %s\n",  buffer_out);
 			ngx_emp_server_log_body(buffer_out, strlen(buffer_out), &api_log_body_t);
 			ngx_pfree(r->connection->pool, buffer_out);

@@ -796,10 +796,10 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 	evhttp_add_header(ctx->req->output_headers, "request_time", log_body_t->request_time);
 	evhttp_add_header(ctx->req->output_headers, "body_bytes_sent", log_body_t->body_bytes_sent);
 	evhttp_add_header(ctx->req->output_headers, "status", log_body_t->status);
-	if(log_body_t->content_encoding.len > 0)
-		evhttp_add_header(ctx->req->output_headers, "Content-Encoding", (const char*)log_body_t->content_encoding.data);
-	if(log_body_t->content_type.len > 0)
-		evhttp_add_header(ctx->req->output_headers, "Content-Type", (const char*)log_body_t->content_type.data);
+	//if(log_body_t->content_encoding.len > 0)
+	//	evhttp_add_header(ctx->req->output_headers, "Content-Encoding", (const char*)log_body_t->content_encoding.data);
+	//if(log_body_t->content_type.len > 0)
+	//	evhttp_add_header(ctx->req->output_headers, "Content-Type", (const char*)log_body_t->content_type.data);
 	event_base_dispatch(ctx->base); 
 	printf("check result is %d \n", ctx->ok);
 	context_free(ctx); 
