@@ -361,7 +361,7 @@ ngx_http_log_handler(ngx_http_request_t *r)
 			//ngx_emp_server_log_body(r, buffer_out, strlen(buffer_out), &api_log_body_t);
 			//ngx_pfree(r->connection->pool, buffer_out);
 		//} else {
-			//printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
+			printf("normal response body is %s %lld\n",  r->connection->body_out->pos, ngx_buf_size(r->connection->body_out));
 			ngx_emp_server_log_body((char*)r->connection->body_out->pos, ngx_buf_size(r->connection->body_out), &api_log_body_t);
 		//}
 		ngx_pfree(r->connection->pool, r->connection->body_out->pos);
