@@ -633,7 +633,7 @@ static void *heart_beat_thread(void *arg) {
 		char request_uri[128];
 		printf("heart beat @ %s:%s on process %d \n",
 					server->emp_host, server->emp_port, getpid());
-		sprintf(request_uri, "http://%s:%s/heartBeat", server->emp_host, server->emp_port);
+		sprintf(request_uri, "http://%s:%s/NGINX/api_heart_beat", server->emp_host, server->emp_port);
 		request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
 		if (!ctx){ 
 			continue;
