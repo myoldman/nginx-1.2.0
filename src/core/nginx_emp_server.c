@@ -633,7 +633,7 @@ static void *heart_beat_thread(void *arg) {
 		char request_uri[128];
 		printf("heart beat @ %s:%s on process %d \n",
 					server->emp_host, server->emp_port, getpid());
-		sprintf(request_uri, "http://%s:%s/NGINX/api_heart_beat", server->emp_host, server->emp_port);
+		sprintf(request_uri, "http://%s:%s/emp-ws/NGINX/api_heart_beat", server->emp_host, server->emp_port);
 		request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
 		if (!ctx){ 
 			continue;
@@ -725,11 +725,11 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	
 
 	if(api_verify->args.len <= 0) {
-		sprintf(request_uri, "http://%s:%s/NGINX/api_verify", rr_server->emp_host, rr_server->emp_port);
+		sprintf(request_uri, "http://%s:%s/emp-ws/NGINX/api_verify", rr_server->emp_host, rr_server->emp_port);
 	} else {
 		char args[1024] = {0};
 		strncpy(args, (char *)api_verify->args.data, api_verify->args.len);
-		sprintf(request_uri, "http://%s:%s/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, args);
+		sprintf(request_uri, "http://%s:%s/emp-ws/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, args);
 	}
 
 	printf("check appid %s @ %s:%s on process %d %s\n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid(), request_uri);
@@ -786,7 +786,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 	
 	printf("log body %s @ %s:%s on process %d \n", log_body_t->verify_code,
 				rr_server->emp_host, rr_server->emp_port, getpid());
-	sprintf(request_uri, "http://%s:%s/NGINX/api_log_info", rr_server->emp_host, rr_server->emp_port);
+	sprintf(request_uri, "http://%s:%s/NGINX/emp-ws/api_log_info", rr_server->emp_host, rr_server->emp_port);
 	
 	request_context_t *ctx = create_context(request_uri,"post",body, body_length ); 
 	if (!ctx){ 
