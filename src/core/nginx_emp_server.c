@@ -786,7 +786,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 	
 	printf("log body %s @ %s:%s on process %d \n", log_body_t->verify_code,
 				rr_server->emp_host, rr_server->emp_port, getpid());
-	sprintf(request_uri, "http://%s:%s/NGINX/emp-ws/api_log_info", rr_server->emp_host, rr_server->emp_port);
+	sprintf(request_uri, "http://%s:%s/emp-ws/NGINX/api_log_info", rr_server->emp_host, rr_server->emp_port);
 	
 	request_context_t *ctx = create_context(request_uri,"post",body, body_length ); 
 	if (!ctx){ 
