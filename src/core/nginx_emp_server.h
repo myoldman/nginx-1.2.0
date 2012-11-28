@@ -47,7 +47,7 @@ typedef struct  {
 }ngx_emp_api_verify_t;
 
 typedef struct  {
-	char verify_code[32];
+	char verify_code[33];
 	char request_time[16];
 	char status[8];
 	char body_bytes_sent[16];
