@@ -729,7 +729,7 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	} else {
 		char args[1024] = {0};
 		strncpy(args, (char *)api_verify->args.data, api_verify->args.len);
-		sprintf(request_uri, "http://%s:%s/emp-ws/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, args);
+		snprintf(request_uri, sizeof(request_uri), "http://%s:%s/emp-ws/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, args);
 	}
 
 	printf("check appid %s @ %s:%s on process %d %s\n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid(), request_uri);
