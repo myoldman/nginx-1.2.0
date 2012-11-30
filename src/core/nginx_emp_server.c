@@ -22,7 +22,7 @@ typedef struct request_context_s
     struct evbuffer *buffer;
 	int ok;
 	int server_down;
-	char verify_code[33];
+	char verify_code[64];
 } request_context_t; 
 
 int ms_sleep(long ms);
@@ -571,7 +571,7 @@ request_context_t *create_context(const char *url ,const char * method, char * o
     ctx = calloc(1, sizeof(*ctx));  
     if (!ctx)  
         return 0;  
-	ngx_memzero(ctx->verify_code, 33);
+	ngx_memzero(ctx->verify_code, 64);
     ctx->uri = evhttp_uri_parse(url);  
     if (!ctx->uri)  
         return 0;  
