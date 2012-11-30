@@ -534,7 +534,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 	        }  
 			const char * verify_code_res = evhttp_find_header(req->input_headers,"verify_code");
 			if(verify_code_res != NULL) {
-				strcpy(ctx->verify_code, verify_code_res);
+				strncpy(ctx->verify_code, verify_code_res, 32);
 			}
 	        event_base_loopexit(ctx->base, 0);  
 	      
