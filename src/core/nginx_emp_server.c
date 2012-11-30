@@ -751,7 +751,7 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	printf("check result is %d \n", ctx->ok);
 	if(ctx->ok) {
 		//strcpy(verify_code, ctx->verify_code);
-		printf("verify_code is %s \n", ctx->verify_code);
+		printf("verify_code is %s %p\n", ctx->verify_code, api_verify);
 	}
 
 	context_free(ctx); 
