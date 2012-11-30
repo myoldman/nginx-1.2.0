@@ -150,6 +150,7 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 		//if(r->headers_out.content_type.data)
 			//printf("response content type is %s\n", r->headers_out.content_type.data);
 		if(r->headers_out.content_type.data && r->app_id && strlen(r->app_id) != 0 &&
+			r->verify_code && strlen((const char*)r->verify_code) != 0 &&
 			( !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"text", 4) 
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/xml", 15) 
 			|| !ngx_strncasecmp(r->headers_out.content_type.data, (u_char *)"application/json", 16) )
