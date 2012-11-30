@@ -705,7 +705,7 @@ emp_server_t *round_robin_select_server()
 
 ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *verify_code)
 {
-	char request_uri[128];
+	char request_uri[256];
 
 	if(api_verify == NULL || verify_code == NULL) {
 		printf("parameter error return success\n");
