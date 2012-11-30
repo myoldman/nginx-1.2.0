@@ -998,10 +998,10 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 		api_verify_t.verify_body_len = 0;
 		ngx_emp_base64_encode_request_body(r, &api_verify_t.verify_body, &api_verify_t.verify_body_len);
 		api_verify_t.args = r->args;
-		//ngx_int_t ret = ngx_emp_server_api_verify(&api_verify_t, r->verify_code);
-		//if(!ret) {
-		//	return NGX_HTTP_INTERNAL_SERVER_ERROR;
-		//}
+		ngx_int_t ret = ngx_emp_server_api_verify(&api_verify_t, r->verify_code);
+		if(!ret) {
+			return NGX_HTTP_INTERNAL_SERVER_ERROR;
+		}
 	}
 
     return NGX_DONE;
