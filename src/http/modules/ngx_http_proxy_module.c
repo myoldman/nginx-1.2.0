@@ -982,7 +982,7 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	r->access_token = ngx_pcalloc(r->pool, 128);
 	r->verify_code = ngx_pcalloc(r->pool, 64);
 	//ngx_emp_server_get_arg(r, "app_id", 6, "app-id", 6 , r->app_id);
-	//ngx_emp_server_get_arg(r, "access_token", 12, "access-token", 12 , r->access_token);
+	ngx_emp_server_get_arg(r, "access_token", 12, "access-token", 12 , r->access_token);
 	
 	//printf("uri is %s %d\n", r->uri.data, r->uri.len);
 		
