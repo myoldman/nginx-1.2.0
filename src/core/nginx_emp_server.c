@@ -526,7 +526,7 @@ void request_callback(struct evhttp_request *req, void *arg)
 	        	break;
 			}
 			
-			printf("res_code:%s \n",result);
+			//printf("res_code:%s \n",result);
 	        if( strcmp( result,"0") == 0 ){  
 	            ctx->ok = 1;    
 	        }else{  
@@ -631,8 +631,7 @@ static void *heart_beat_thread(void *arg) {
 	pthread_mutex_lock(&server->mutex);
 	while(proxy_config_process->heart_beat_running){
 		char request_uri[128];
-		printf("heart beat @ %s:%s on process %d \n",
-					server->emp_host, server->emp_port, getpid());
+		//printf("heart beat @ %s:%s on process %d \n",	server->emp_host, server->emp_port, getpid());
 		sprintf(request_uri, "http://%s:%s/emp-ws-redis/NGINX/api_heart_beat", server->emp_host, server->emp_port);
 		request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
 		if (!ctx){ 
@@ -732,7 +731,7 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 		snprintf(request_uri, sizeof(request_uri), "http://%s:%s/emp-ws-redis/NGINX/api_verify?%s", rr_server->emp_host, rr_server->emp_port, args);
 	}
 
-	printf("check appid %s @ %s:%s on process %d %s\n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid(), request_uri);
+	//printf("check appid %s @ %s:%s on process %d %s\n", api_verify->app_id, rr_server->emp_host, rr_server->emp_port, getpid(), request_uri);
 	
 	request_context_t *ctx = create_context(request_uri,"post", api_verify->verify_body, api_verify->verify_body_len); 
 	if (!ctx){ 
@@ -748,10 +747,10 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	evhttp_add_header(ctx->req->output_headers, "url", api_verify->http_xforwarded_for);
 	
 	event_base_dispatch(ctx->base); 
-	printf("check result is %d \n", ctx->ok);
+	//printf("check result is %d \n", ctx->ok);
 	if(ctx->ok) {
 		strncpy(verify_code, ctx->verify_code, 32);
-		printf("verify_code is %s %p\n", ctx->verify_code, api_verify);
+		//printf("verify_code is %s %p\n", ctx->verify_code, api_verify);
 	}
 
 	context_free(ctx); 
@@ -784,8 +783,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 		return 1;
 	}
 	
-	printf("log body %s @ %s:%s on process %d \n", log_body_t->verify_code,
-				rr_server->emp_host, rr_server->emp_port, getpid());
+	//printf("log body %s @ %s:%s on process %d \n", log_body_t->verify_code, rr_server->emp_host, rr_server->emp_port, getpid());
 	sprintf(request_uri, "http://%s:%s/emp-ws-redis/NGINX/api_log_info", rr_server->emp_host, rr_server->emp_port);
 	
 	request_context_t *ctx = create_context(request_uri,"post",body, body_length ); 
@@ -801,7 +799,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 	//if(log_body_t->content_type.len > 0)
 	//	evhttp_add_header(ctx->req->output_headers, "Content-Type", (const char*)log_body_t->content_type.data);
 	event_base_dispatch(ctx->base); 
-	printf("check result is %d \n", ctx->ok);
+	//printf("check result is %d \n", ctx->ok);
 	context_free(ctx); 
 	return ctx->ok;	
 }
