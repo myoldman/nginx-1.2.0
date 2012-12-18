@@ -56,6 +56,8 @@ static void ngx_emp_server_core_process_exit(ngx_cycle_t *cycle);
 static void *ngx_emp_server_core_create_conf(ngx_cycle_t *cycle);
 static char *ngx_emp_server_core_init_conf(ngx_cycle_t *cycle, void *conf);
 static char *ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd,    void *conf);
+static char *ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd,    void *conf);
+
 
 // emp server  module
 static ngx_command_t  ngx_emp_server_commands[] = {
@@ -102,6 +104,12 @@ static ngx_command_t  ngx_emp_server_core_commands[] = {
     { ngx_string("server"),
       NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
       ngx_log_servers_server,
+      0,
+      0,
+      NULL },
+      { ngx_string("appid_ip"),
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      ngx_log_servers_appid_ip,
       0,
       0,
       NULL },
@@ -318,6 +326,53 @@ ngx_log_servers_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	emp_server->addrs = u.addrs;
 	emp_server->naddrs = u.naddrs;
 	printf("called:ngx_log_servers_server OK\n");
+    return NGX_CONF_OK;
+}
+
+static char *
+ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+{
+	printf("called:ngx_log_servers_appid_ip\n");
+	ngx_emp_server_conf_t  *escf = conf;
+    ngx_str_t                   *value;
+    ngx_url_t                    u;
+    ngx_emp_appid_ip_t  *emp_appid_ip;
+
+    if (escf->appid_ip_maps == NULL) {
+        escf->appid_ip_maps = ngx_array_create(cf->pool, 8,
+                                         sizeof(ngx_emp_appid_ip_t));
+        if (escf->appid_ip_maps == NULL) {
+            return NGX_CONF_ERROR;
+        }
+    }
+
+    emp_appid_ip = ngx_array_push(escf->appid_ip_maps);
+    if (emp_appid_ip == NULL) {
+        return NGX_CONF_ERROR;
+    }
+
+    ngx_memzero(emp_appid_ip, sizeof(ngx_emp_appid_ip_t));
+
+    value = cf->args->elts;
+
+	strncpy(emp_appid_ip->app_id, value[1], 64);
+	
+    ngx_memzero(&u, sizeof(ngx_url_t));
+
+    u.url = value[2];
+    u.default_port = 80;
+
+    if (ngx_parse_url(cf->pool, &u) != NGX_OK) {
+        if (u.err) {
+            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
+                               "%s in upstream \"%V\"", u.err, &u.url);
+        }
+
+        return NGX_CONF_ERROR;
+    }
+	ngx_emp_appid_ip_t->addrs = u.addrs;
+	ngx_emp_appid_ip_t->naddrs = u.naddrs;
+	printf("called:ngx_log_servers_appid_ip OK\n");
     return NGX_CONF_OK;
 }
 

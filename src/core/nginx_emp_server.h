@@ -17,6 +17,13 @@ typedef struct {
 } ngx_emp_server_t;
 
 typedef struct {
+	char app_id[64];
+    ngx_addr_t                      *addrs;
+    ngx_uint_t                       naddrs;
+} ngx_emp_appid_ip_t;
+
+
+typedef struct {
     ngx_str_t              *name;
 
     void                 *(*create_conf)(ngx_cycle_t *cycle);
@@ -33,6 +40,7 @@ typedef struct {
 	int body_memory_grow_step;
 	int body_memory_max_multiple;
 	ngx_array_t   *servers;
+	ngx_array_t	  *appid_ip_maps;
 } ngx_emp_server_conf_t;
 
 typedef struct  {
