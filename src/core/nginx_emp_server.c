@@ -355,7 +355,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     value = cf->args->elts;
 
-	strncpy(emp_appid_ip->app_id, value[1], 64);
+	strncpy(emp_appid_ip->app_id, value[1].data, 64);
 	
     ngx_memzero(&u, sizeof(ngx_url_t));
 
@@ -370,8 +370,8 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
         return NGX_CONF_ERROR;
     }
-	ngx_emp_appid_ip_t->addrs = u.addrs;
-	ngx_emp_appid_ip_t->naddrs = u.naddrs;
+	emp_appid_ip->addrs = u.addrs;
+	emp_appid_ip->naddrs = u.naddrs;
 	printf("called:ngx_log_servers_appid_ip OK\n");
     return NGX_CONF_OK;
 }
