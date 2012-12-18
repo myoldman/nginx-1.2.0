@@ -108,7 +108,7 @@ static ngx_command_t  ngx_emp_server_core_commands[] = {
       0,
       NULL },
       { ngx_string("appid_ip"),
-      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE2,
       ngx_log_servers_appid_ip,
       0,
       0,
