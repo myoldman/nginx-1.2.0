@@ -355,7 +355,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     value = cf->args->elts;
 
-	strncpy(emp_appid_ip->app_id, (char *)value[1]->data, 64);
+	strncpy(emp_appid_ip->app_id, (char *)value[1].data, 64);
 	
     ngx_memzero(&u, sizeof(ngx_url_t));
 
