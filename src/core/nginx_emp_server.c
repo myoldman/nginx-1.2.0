@@ -882,7 +882,7 @@ ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip)
 			ips = appid_ip[i].addrs->elts;
 			for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
 				printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
-				if(strcmp(ip, ips[j].data) == 0) {
+				if(strcmp(ip, (char *)ips[j].data) == 0) {
 					printf("appid ip match\n");
 					return 1;
 				}
