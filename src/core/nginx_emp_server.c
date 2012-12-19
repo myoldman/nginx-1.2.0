@@ -863,7 +863,7 @@ ngx_int_t ngx_emp_server_body_max_multiple()
 	return proxy_config_process->body_max_multiple;
 }
 
-ngx_int_t ngx_emp_server_api_verify()
+ngx_int_t ngx_emp_server_api_verify_on()
 {
 	return proxy_config_process->api_verify;
 }
