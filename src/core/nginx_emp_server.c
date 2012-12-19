@@ -522,11 +522,11 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 
 	appid_ip = ecf->appid_ip_maps->elts;
 	for(i = 0; i< ecf->appid_ip_maps->nelts; i++) {
-		//for (j = 0; j < appid_ip[i].naddrs; j++) {
+		for (j = 0; j < appid_ip[i].naddrs; j++) {
 		//	server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
 		//	port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
-		//	printf("appid %s ip allowed is %s:%d\n", appid_ip[i].app_id,  server_addr, port);
-        //}
+			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  appid_ip[i].addrs[j]->data);
+        }
 	}
 	
 	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
