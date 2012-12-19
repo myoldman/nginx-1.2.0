@@ -468,6 +468,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
 	ngx_emp_server_t *server;
+	ngx_str_t *ips;
 	ngx_emp_appid_ip_t *appid_ip;
 	char *server_addr;
 	in_port_t port;
@@ -522,10 +523,11 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 
 	appid_ip = ecf->appid_ip_maps->elts;
 	for(i = 0; i< ecf->appid_ip_maps->nelts; i++) {
+		ips = appid_ip[i].addrs->elts;
 		for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
 		//	server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
 		//	port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
-			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  appid_ip[i].addrs->elts[j]->data);
+			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
         }
 	}
 	
