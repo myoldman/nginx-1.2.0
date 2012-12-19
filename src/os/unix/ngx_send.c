@@ -42,7 +42,7 @@ ngx_unix_send(ngx_connection_t *c, u_char *buf, size_t size)
             }
 
             c->sent += n;
-			printf("write length is %d \n", size);
+			//printf("write length is %d \n", size);
             return n;
         }
 

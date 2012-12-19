@@ -141,7 +141,7 @@ ngx_writev_chain(ngx_connection_t *c, ngx_chain_t *in, off_t limit, int is_gzip)
         if (send - prev_send == sent) {
             complete = 1;
         }
-		printf("write ev is %d \n", size);
+		//printf("write ev is %d \n", size);
         c->sent += sent;
 
         for (cl = in; cl; cl = cl->next) {

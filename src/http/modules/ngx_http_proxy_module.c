@@ -880,7 +880,7 @@ ngx_emp_server_get_arg(ngx_http_request_t *r,
 		if (ngx_http_arg(r, (u_char *) arg_name, arg_name_len, &value) == NGX_OK
 			|| ngx_http_arg(r, (u_char *) arg_name_alter, arg_name_alter_len, &value) == NGX_OK) {
 			ngx_cpystrn((u_char *)arg_value, value.data, value.len + 1);
-			printf("%s from query string is %s %d\n", arg_name, arg_value, value.len);
+			printf("%s from query string is %s %d\n", arg_name, arg_value, (int)value.len);
 		}
 	}
 	
@@ -889,7 +889,7 @@ ngx_emp_server_get_arg(ngx_http_request_t *r,
 		if (ngx_http_form_input_arg(r, (u_char *) arg_name, arg_name_len, &value, 0) == NGX_OK
 			|| ngx_http_form_input_arg(r, (u_char *) arg_name_alter, arg_name_alter_len, &value, 0) == NGX_OK) {
 			ngx_cpystrn((u_char *)arg_value, value.data, value.len + 1);
-			printf("%s from body is %s %d\n", arg_name, arg_value, value.len);
+			printf("%s from body is %s %d\n", arg_name, arg_value, (int)value.len);
 		}
 	}
 }

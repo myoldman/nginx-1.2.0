@@ -18,8 +18,7 @@ typedef struct {
 
 typedef struct {
 	char app_id[64];
-    ngx_addr_t                      *addrs;
-    ngx_uint_t                       naddrs;
+    ngx_array_t                      *addrs;
 } ngx_emp_appid_ip_t;
 
 

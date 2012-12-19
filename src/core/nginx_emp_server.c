@@ -335,8 +335,9 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	printf("called:ngx_log_servers_appid_ip\n");
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
-    ngx_url_t                    u;
-    ngx_emp_appid_ip_t  *emp_appid_ip;
+    ngx_emp_appid_ip_t  *emp_appid_ip = NULL;
+	ngx_str_t *ip;
+	ngx_uint_t i;
 
     if (escf->appid_ip_maps == NULL) {
         escf->appid_ip_maps = ngx_array_create(cf->pool, 8,
@@ -346,32 +347,31 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         }
     }
 
-    emp_appid_ip = ngx_array_push(escf->appid_ip_maps);
-    if (emp_appid_ip == NULL) {
-        return NGX_CONF_ERROR;
-    }
-
+	emp_appid_ip = ngx_array_push(escf->appid_ip_maps);
+	if (emp_appid_ip == NULL) {
+	    return NGX_CONF_ERROR;
+	}
+		
     ngx_memzero(emp_appid_ip, sizeof(ngx_emp_appid_ip_t));
-
     value = cf->args->elts;
 
 	strncpy(emp_appid_ip->app_id, (char *)value[1].data, 64);
+
+	emp_appid_ip->addrs = ngx_array_create(cf->pool, 4, sizeof(ngx_str_t);
+	ip = ngx_array_push(emp_appid_ip->addrs);
+
+	char *needle="|";
+	char *ip_addrs = (char *)value[2].data;
+	char* buf = strstr( ip_addrs, needle);
+	while( buf != NULL )
+	{
+    	buf[0]='/0';
+    	printf( "%s/n ", ip_addrs);
+    	ip_addrs = buf + strlen(needle);
+    	/* Get next token: */
+    	buf = strstr( ip_addrs, needle);
+	}
 	
-    ngx_memzero(&u, sizeof(ngx_url_t));
-
-    u.url = value[2];
-    u.default_port = 80;
-
-    if (ngx_parse_url(cf->pool, &u) != NGX_OK) {
-        if (u.err) {
-            ngx_conf_log_error(NGX_LOG_EMERG, cf, 0,
-                               "%s in upstream \"%V\"", u.err, &u.url);
-        }
-
-        return NGX_CONF_ERROR;
-    }
-	emp_appid_ip->addrs = u.addrs;
-	emp_appid_ip->naddrs = u.naddrs;
 	printf("called:ngx_log_servers_appid_ip OK\n");
     return NGX_CONF_OK;
 }
