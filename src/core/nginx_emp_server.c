@@ -369,7 +369,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 		int len = strlen(buf);
 		ip->data = ngx_palloc(cf->pool,len + 1);
 		ip->len = len;
-		strcpy(ip->data, buf);
+		strcpy((char *)ip->data, buf);
 		printf( "ip is %s\n", buf);
     	buf = strtok( NULL, needle);
 		
