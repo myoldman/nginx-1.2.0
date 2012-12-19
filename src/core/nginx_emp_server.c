@@ -878,11 +878,20 @@ ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip)
 	
 	appid_ip = proxy_config_process->appid_ip_maps->elts;
 	for(i = 0; i< proxy_config_process->appid_ip_maps->nelts; i++) {
-		ips = appid_ip[i].addrs->elts;
-		for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
-			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
-        }
+		if(strcmp(appid_ip[i].app_id, app_id) == 0) {
+			ips = appid_ip[i].addrs->elts;
+			for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
+				printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
+				if(strcmp(ip, ips[j].data) == 0) {
+					printf("appid ip match\n");
+					return 1;
+				}
+	        }
+			return 0;
+		}
 	}
+
+	return 1;
 }
 
 
