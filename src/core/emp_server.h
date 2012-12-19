@@ -16,6 +16,8 @@
 #include <assert.h>
 #include <errno.h>
 #include <netdb.h>
+#include <ngx_core.h>
+
 
 
 #define MAX_HEADERS     256
