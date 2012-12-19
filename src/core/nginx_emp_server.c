@@ -336,6 +336,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
     ngx_emp_appid_ip_t  *emp_appid_ip = NULL;
+	ngx_str_t *ip;
 
     if (escf->appid_ip_maps == NULL) {
         escf->appid_ip_maps = ngx_array_create(cf->pool, 8,
@@ -366,7 +367,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	char *buf = strstr( ip_addrs, needle);
 	while( buf != NULL )
 	{
-    	buf[0]='/0';
+    	buf[0] = '/0';
     	printf( "%s/n ", ip_addrs);
     	ip_addrs = buf + strlen(needle);
     	/* Get next token: */
