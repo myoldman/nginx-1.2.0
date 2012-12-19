@@ -64,6 +64,7 @@ typedef struct emp_server_s{
 
 typedef struct{
   emp_server_t *serverlist;
+  ngx_array_t *appid_ip_maps;
   int maxretries;
   int retryinterval;
   int body_grow_step;

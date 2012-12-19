@@ -530,6 +530,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
         }
 	}
+	proxy_config_process->appid_ip_maps = appid_ip_maps;
 	
 	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
 	printf("proxy_config is %p pid is %d\n", proxy_config_process, getpid());
