@@ -358,17 +358,21 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	emp_appid_ip->addrs = ngx_array_create(cf->pool, 4, sizeof(ngx_str_t));
 	if (emp_appid_ip->addrs == NULL) {
         return NGX_CONF_ERROR;
-    }
-	
-	ip = ngx_array_push(emp_appid_ip->addrs);
+	}
 
 	char *needle = "|";
 	char *ip_addrs = (char *)value[2].data;
 	char *buf = strtok( ip_addrs, needle);
 	while( buf != NULL )
 	{
-    	printf( "ip is %s\n", buf);
+		ip = ngx_array_push(emp_appid_ip->addrs);
+		int len = strlen(buf);
+		ip->data = ngx_palloc(cf->pool,len + 1);
+		ip->len = len;
+		strcpy(ip->data, buf);
+		printf( "ip is %s\n", buf);
     	buf = strtok( NULL, needle);
+		
 	}
 	
 	printf("called:ngx_log_servers_appid_ip OK\n");
