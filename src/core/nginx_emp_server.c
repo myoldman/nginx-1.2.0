@@ -868,6 +868,22 @@ ngx_int_t ngx_emp_server_api_verify_on()
 	return proxy_config_process->api_verify;
 }
 
+ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip)
+{
+	ngx_str_t *ips;
+	ngx_emp_appid_ip_t *appid_ip;
+	ngx_uint_t i,j;
+	
+	printf("check appid %s ip %s\n", app_id, ip);
+	
+	appid_ip = proxy_config_process->appid_ip_maps->elts;
+	for(i = 0; i< proxy_config_process->appid_ip_maps->nelts; i++) {
+		ips = appid_ip[i].addrs->elts;
+		for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
+			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
+        }
+	}
+}
 
 
 ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_body_t *log_body_t)

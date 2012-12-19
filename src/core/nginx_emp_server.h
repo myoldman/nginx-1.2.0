@@ -68,6 +68,7 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 ngx_int_t ngx_emp_server_body_grow_step();
 ngx_int_t ngx_emp_server_body_max_multiple();
 ngx_int_t ngx_emp_server_api_verify_on();
+ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip);
 
 #endif
 
