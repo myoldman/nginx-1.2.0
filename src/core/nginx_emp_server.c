@@ -336,8 +336,6 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
     ngx_emp_appid_ip_t  *emp_appid_ip = NULL;
-	ngx_str_t *ip;
-	ngx_uint_t i;
 
     if (escf->appid_ip_maps == NULL) {
         escf->appid_ip_maps = ngx_array_create(cf->pool, 8,
@@ -356,13 +354,16 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     value = cf->args->elts;
 
 	strncpy(emp_appid_ip->app_id, (char *)value[1].data, 64);
-
-	emp_appid_ip->addrs = ngx_array_create(cf->pool, 4, sizeof(ngx_str_t);
+	emp_appid_ip->addrs = ngx_array_create(cf->pool, 4, sizeof(ngx_str_t));
+	if (emp_appid_ip->addrs == NULL) {
+        return NGX_CONF_ERROR;
+    }
+	
 	ip = ngx_array_push(emp_appid_ip->addrs);
 
-	char *needle="|";
+	char *needle = "|";
 	char *ip_addrs = (char *)value[2].data;
-	char* buf = strstr( ip_addrs, needle);
+	char *buf = strstr( ip_addrs, needle);
 	while( buf != NULL )
 	{
     	buf[0]='/0';
