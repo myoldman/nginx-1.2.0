@@ -367,8 +367,8 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	char *buf = strstr( ip_addrs, needle);
 	while( buf != NULL )
 	{
-    	buf[0] = '/0';
-    	printf( "%s/n ", ip_addrs);
+    	buf[0] = '\0';
+    	printf( "%s\n ", ip_addrs);
     	ip_addrs = buf + strlen(needle);
     	/* Get next token: */
     	buf = strstr( ip_addrs, needle);
@@ -521,11 +521,11 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 
 	appid_ip = ecf->appid_ip_maps->elts;
 	for(i = 0; i< ecf->appid_ip_maps->nelts; i++) {
-		for (j = 0; j < appid_ip[i].naddrs; j++) {
-			server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
-			port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
-			printf("appid %s ip allowed is %s:%d\n", appid_ip[i].app_id,  server_addr, port);
-        }
+		//for (j = 0; j < appid_ip[i].naddrs; j++) {
+		//	server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
+		//	port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
+		//	printf("appid %s ip allowed is %s:%d\n", appid_ip[i].app_id,  server_addr, port);
+        //}
 	}
 	
 	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
