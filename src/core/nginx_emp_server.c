@@ -46,6 +46,8 @@ static char *ngx_log_servers_block(ngx_conf_t *cf, ngx_command_t *cmd, void *con
 static char *ngx_log_heart_beat_interval(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_log_body_memory_grow_step(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static char *ngx_log_body_memory_max_multiple(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static char *ngx_log_body_api_verify(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+
 
 
 
@@ -128,6 +130,12 @@ static ngx_command_t  ngx_emp_server_core_commands[] = {
       { ngx_string("body_memory_max_multiple"),
       NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
       ngx_log_body_memory_max_multiple,
+      0,
+      0,
+      NULL },
+      { ngx_string("api_verify"),
+      NGX_EMP_SERVER_CONF|NGX_CONF_TAKE1,
+      ngx_log_body_api_verify,
       0,
       0,
       NULL },
@@ -277,6 +285,21 @@ ngx_log_body_memory_max_multiple(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	escf->heart_beat_interval = 0;
     value = cf->args->elts;
 	escf->body_memory_max_multiple = atoi((char *)value[1].data);
+	
+	printf("called:ngx_log_body_memory_max_multiple %s OK\n", value[1].data);
+    return NGX_CONF_OK;
+}
+
+static char *
+ngx_log_body_api_verify(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
+{
+	printf("called:ngx_log_heart_beat_interval\n");
+	ngx_emp_server_conf_t  *escf = conf;
+    ngx_str_t                   *value;
+
+	escf->heart_beat_interval = 0;
+    value = cf->args->elts;
+	escf->api_verify = atoi((char *)value[1].data);
 	
 	printf("called:ngx_log_body_memory_max_multiple %s OK\n", value[1].data);
     return NGX_CONF_OK;
@@ -483,6 +506,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 	proxy_config_process->retryinterval = ecf->heart_beat_interval;
 	proxy_config_process->body_grow_step = ecf->body_memory_grow_step;
 	proxy_config_process->body_max_multiple = ecf->body_memory_max_multiple;
+	proxy_config_process->api_verify = ecf->api_verify;
 	proxy_config_process->maxretries = 3;
 	strcpy(proxy_config_process->log_facility, "LOG_LOCAL1");
 	proxy_config_process->log_stderr = 1;
@@ -838,6 +862,12 @@ ngx_int_t ngx_emp_server_body_max_multiple()
 {
 	return proxy_config_process->body_max_multiple;
 }
+
+ngx_int_t ngx_emp_server_api_verify()
+{
+	return proxy_config_process->api_verify;
+}
+
 
 
 ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_body_t *log_body_t)
