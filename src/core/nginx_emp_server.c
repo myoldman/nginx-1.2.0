@@ -364,14 +364,11 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 	char *needle = "|";
 	char *ip_addrs = (char *)value[2].data;
-	char *buf = strstr( ip_addrs, needle);
+	char *buf = strtok( ip_addrs, needle);
 	while( buf != NULL )
 	{
-    	buf[0] = '\0';
-    	printf( "%s\n ", ip_addrs);
-    	ip_addrs = buf + strlen(needle);
-    	/* Get next token: */
-    	buf = strstr( ip_addrs, needle);
+    	printf( "ip is %s\n", buf);
+    	buf = strtok( NULL, needle);
 	}
 	
 	printf("called:ngx_log_servers_appid_ip OK\n");
