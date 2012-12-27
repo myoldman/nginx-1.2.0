@@ -300,7 +300,7 @@ ngx_log_body_api_verify(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	escf->heart_beat_interval = 0;
     value = cf->args->elts;
 	escf->api_verify = 1;
-	if(strcmp(value[1].data, 0) == 0 ){
+	if(strcmp((char*)value[1].data, "0") == 0 ){
 		escf->api_verify = 0;
 	}
 
