@@ -78,7 +78,7 @@ typedef struct{
   int svr_n;
   int last_select;
   int heart_beat_running;
-  ngx_array_t *appid_ip_maps;
+  //ngx_array_t *appid_ip_maps;
 } proxy_config_t;
 
 /**
