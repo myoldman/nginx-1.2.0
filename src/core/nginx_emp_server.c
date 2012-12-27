@@ -731,7 +731,7 @@ static void *heart_beat_thread(void *arg) {
 	pthread_mutex_lock(&server->mutex);
 	while(proxy_config_process->heart_beat_running){
 		char request_uri[128];
-		//printf("heart beat @ %s:%s on process %d \n",	server->emp_host, server->emp_port, getpid());
+		printf("heart beat @ %s:%s on process %d \n",	server->emp_host, server->emp_port, getpid());
 		sprintf(request_uri, "http://%s:%s/emp-ws-redis/NGINX/api_heart_beat", server->emp_host, server->emp_port);
 		request_context_t *ctx = create_context(request_uri,"get",NULL, 0 ); 
 		if (!ctx){ 
