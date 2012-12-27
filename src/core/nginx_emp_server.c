@@ -491,7 +491,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ngx_core_conf_t     *ccf;
     ngx_emp_server_conf_t    *ecf;
 	ngx_emp_server_t *server;
-	ngx_str_t *ips;
+	//ngx_str_t *ips;
 	//ngx_emp_appid_ip_t *appid_ip, *temp_appid_ip;
 	char *server_addr;
 	in_port_t port;
