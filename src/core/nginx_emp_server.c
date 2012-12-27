@@ -731,6 +731,7 @@ static void *heart_beat_thread(void *arg) {
 	struct timeval now;
   	struct timespec outtime;
 	pthread_mutex_lock(&server->mutex);
+	printf( "is heart_beat %d \n", proxy_config_process->heart_beat_running);
 	while(proxy_config_process->heart_beat_running){
 		char request_uri[128];
 		printf("heart beat @ %s:%s on process %d \n",	server->emp_host, server->emp_port, getpid());
