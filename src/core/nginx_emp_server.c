@@ -267,7 +267,6 @@ ngx_log_body_memory_grow_step(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
 
-	escf->heart_beat_interval = 0;
     value = cf->args->elts;
 	escf->body_memory_grow_step = atoi((char *)value[1].data);
 	
@@ -282,7 +281,6 @@ ngx_log_body_memory_max_multiple(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
 
-	escf->heart_beat_interval = 0;
     value = cf->args->elts;
 	escf->body_memory_max_multiple = atoi((char *)value[1].data);
 	
@@ -297,14 +295,13 @@ ngx_log_body_api_verify(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 	ngx_emp_server_conf_t  *escf = conf;
     ngx_str_t                   *value;
 
-	escf->heart_beat_interval = 0;
     value = cf->args->elts;
 	escf->api_verify = 1;
 	if(strcmp((char*)value[1].data, "0") == 0 ){
 		escf->api_verify = 0;
 	}
 
-	printf("called:ngx_log_body_memory_max_multiple %d OK\n", escf->api_verify);
+	printf("called:ngx_log_body_api_verify %d OK\n", escf->api_verify);
     return NGX_CONF_OK;
 }
 
