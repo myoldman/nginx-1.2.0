@@ -492,7 +492,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ngx_emp_server_conf_t    *ecf;
 	ngx_emp_server_t *server;
 	ngx_str_t *ips;
-	ngx_emp_appid_ip_t *appid_ip, *temp_appid_ip;
+	//ngx_emp_appid_ip_t *appid_ip, *temp_appid_ip;
 	char *server_addr;
 	in_port_t port;
 	ngx_uint_t i,j;
@@ -544,7 +544,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			printf("server is %s:%d\n", server_addr, port);
         }
 	}
-
+	/*
 	proxy_config_process->appid_ip_maps = ngx_array_create(cycle->pool, ecf->appid_ip_maps->nelts,
                                          sizeof(ngx_emp_appid_ip_t));
 	appid_ip = ecf->appid_ip_maps->elts;
@@ -558,7 +558,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
 			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
         }
 	}
-
+	*/
 	
 	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
 	printf("proxy_config is %p pid is %d\n", proxy_config_process, getpid());
