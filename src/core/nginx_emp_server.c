@@ -377,7 +377,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     ngx_memzero(emp_appid_ip, sizeof(ngx_emp_appid_ip_t));
     value = cf->args->elts;
 
-	strncpy(emp_appid_ip->app_id, (char *)value[1].data, 64);
+	strncpy(emp_appid_ip->app_id, (char *)value[1].data, 63);
 	emp_appid_ip->addrs = ngx_array_create(cf->pool, 4, sizeof(ngx_str_t));
 	if (emp_appid_ip->addrs == NULL) {
         return NGX_CONF_ERROR;
