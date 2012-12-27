@@ -304,7 +304,7 @@ ngx_log_body_api_verify(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 		escf->api_verify = 0;
 	}
 
-	printf("called:ngx_log_body_memory_max_multiple %s OK\n", value[1].data);
+	printf("called:ngx_log_body_memory_max_multiple %d OK\n", escf->api_verify);
     return NGX_CONF_OK;
 }
 
