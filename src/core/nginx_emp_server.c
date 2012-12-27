@@ -492,7 +492,7 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
     ngx_emp_server_conf_t    *ecf;
 	ngx_emp_server_t *server;
 	ngx_str_t *ips;
-	ngx_emp_appid_ip_t *appid_ip;
+	ngx_emp_appid_ip_t *appid_ip, *temp_appid_ip;
 	char *server_addr;
 	in_port_t port;
 	ngx_uint_t i,j;
@@ -545,16 +545,20 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
         }
 	}
 
+	proxy_config_process->appid_ip_maps = ngx_array_create(cycle->pool, ecf->appid_ip_maps->nelts,
+                                         sizeof(ngx_emp_appid_ip_t));
 	appid_ip = ecf->appid_ip_maps->elts;
 	for(i = 0; i< ecf->appid_ip_maps->nelts; i++) {
 		ips = appid_ip[i].addrs->elts;
 		for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
 		//	server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
 		//	port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
+			temp_appid_ip = ngx_array_push(proxy_config_process->appid_ip_maps);
+			ngx_memcpy(temp_appid_ip, appid_ip + i,sizeof(ngx_emp_appid_ip_t));
 			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
         }
 	}
-	proxy_config_process->appid_ip_maps = ecf->appid_ip_maps;
+
 	
 	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
 	printf("proxy_config is %p pid is %d\n", proxy_config_process, getpid());
