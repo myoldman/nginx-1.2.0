@@ -874,6 +874,7 @@ ngx_int_t ngx_emp_server_api_verify_on()
 
 ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip)
 {
+	/*
 	ngx_str_t *ips;
 	ngx_emp_appid_ip_t *appid_ip;
 	ngx_uint_t i,j;
@@ -894,6 +895,7 @@ ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip)
 			return 0;
 		}
 	}
+	*/
 
 	return 1;
 }
