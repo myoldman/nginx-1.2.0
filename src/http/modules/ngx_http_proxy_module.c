@@ -983,10 +983,15 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	r->verify_code = ngx_pcalloc(r->pool, 64);
 	ngx_emp_server_get_arg(r, "app_id", 6, "app-id", 6 , r->app_id);
 	ngx_emp_server_get_arg(r, "access_token", 12, "access-token", 12 , r->access_token);
-	
+
+	if(strlen(r->app_id) != 0) {
+		if(!ngx_emp_server_check_appid_ip(r->app_id, (const char *)r->connection->addr_text.data)) {
+			return NGX_HTTP_INTERNAL_SERVER_ERROR;
+		}
+	}
 	//printf("uri is %s %d\n", r->uri.data, r->uri.len);
 		
-	if(strlen(r->app_id) != 0 && strlen(r->access_token) != 0) {
+	if(strlen(r->app_id) != 0 && strlen(r->access_token) != 0 && ngx_emp_server_api_verify_on()) {
 		ngx_emp_api_verify_t  api_verify_t;
 		ngx_memzero(&api_verify_t,sizeof(api_verify_t));
 		strcpy(api_verify_t.app_id, r->app_id);

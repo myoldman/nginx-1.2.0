@@ -71,6 +71,7 @@ typedef struct{
   int retryinterval;
   int body_grow_step;
   int body_max_multiple;
+  int api_verify;
   char log_facility[12];
   int log_stderr;
   int debug_level;
