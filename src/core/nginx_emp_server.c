@@ -721,7 +721,7 @@ int make_request(request_context_t *ctx ,const char * method, char * output_data
 }  
 
 static void *heart_beat_thread(void *arg) {
-
+	printf( "is heart_beat %d \n", proxy_config_process->heart_beat_running);
 	if( arg == NULL ){
 		LM_ERR( " in worker_thread arg is null \n");
 		return NULL;
