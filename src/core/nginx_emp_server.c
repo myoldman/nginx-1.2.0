@@ -385,6 +385,7 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
 	char *needle = "|";
 	char *ip_addrs = (char *)value[2].data;
+	/*
 	char *buf = strtok_r( ip_addrs, needle);
 	while( buf != NULL )
 	{
@@ -394,9 +395,10 @@ ngx_log_servers_appid_ip(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 		ip->len = len;
 		strcpy((char *)ip->data, buf);
 		printf( "ip is %s\n", buf);
-    	buf = strtok_r( NULL, needle);
+    		buf = strtok_r( NULL, needle);
 		
 	}
+	*/
 	
 	printf("called:ngx_log_servers_appid_ip OK\n");
     return NGX_CONF_OK;
