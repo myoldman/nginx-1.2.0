@@ -985,7 +985,9 @@ ngx_http_proxy_handler(ngx_http_request_t *r)
 	ngx_emp_server_get_arg(r, "access_token", 12, "access-token", 12 , r->access_token);
 
 	if(strlen(r->app_id) != 0) {
-		if(!ngx_emp_server_check_appid_ip(r->app_id, (const char *)r->connection->addr_text.data)) {
+		char app_ip[32] = {0};
+		strncpy(app_ip, (char *)r->connection->addr_text.data, r->connection->addr_text.len);
+		if(!ngx_emp_server_check_appid_ip(r->app_id, app_ip)) {
 			return NGX_HTTP_INTERNAL_SERVER_ERROR;
 		}
 	}

@@ -546,16 +546,18 @@ ngx_emp_server_core_process_init(ngx_cycle_t *cycle)
         }
 	}
 
-	appid_ip = ecf->appid_ip_maps->elts;
-	for(i = 0; i< ecf->appid_ip_maps->nelts; i++) {
-		ips = appid_ip[i].addrs->elts;
-		for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
-		//	server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
-		//	port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
-			printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
-        }
+	if(ecf->appid_ip_maps) {
+		appid_ip = ecf->appid_ip_maps->elts;
+		for(i = 0; i< ecf->appid_ip_maps->nelts; i++) {
+			ips = appid_ip[i].addrs->elts;
+			for (j = 0; j < appid_ip[i].addrs->nelts; j++) {
+			//	server_addr = inet_ntoa(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_addr);
+			//	port = ntohs(((struct sockaddr_in*)appid_ip[i].addrs[j].sockaddr)->sin_port);
+				printf("appid %s ip allowed is %s\n", appid_ip[i].app_id,  ips[j].data);
+	        }
+		}
+		proxy_config_process->appid_ip_maps = ecf->appid_ip_maps;
 	}
-	proxy_config_process->appid_ip_maps = ecf->appid_ip_maps;
 	
 	proxy_config_process->last_select = proxy_config_process->svr_n - 1;
 	printf("proxy_config is %p pid is %d\n", proxy_config_process, getpid());
@@ -575,7 +577,8 @@ ngx_emp_server_core_process_exit(ngx_cycle_t *cycle) {
 		pthread_mutex_lock(&server->mutex);
  	    pthread_cond_signal(&server->cond);
  	    pthread_mutex_unlock(&server->mutex);
-		pthread_join(server->heart_beat_thread, NULL);
+		if(server->heart_beat_thread)
+			pthread_join(server->heart_beat_thread, NULL);
 		server->heart_beat_thread = 0;
 		temp = server;
 		server = server->next;
@@ -845,13 +848,13 @@ ngx_int_t ngx_emp_server_api_verify(ngx_emp_api_verify_t *api_verify, char *veri
 	
 	event_base_dispatch(ctx->base); 
 	//printf("check result is %d \n", ctx->ok);
-	if(ctx->ok) {
+	if(ctx->ok && strlen(ctx->verify_code) > 0) {
 		strncpy(verify_code, ctx->verify_code, 32);
 		//printf("verify_code is %s %p\n", ctx->verify_code, api_verify);
 	}
-
+	int ret = ctx->ok;
 	context_free(ctx); 
-	return ctx->ok;
+	return ret;
 }
 
 ngx_int_t ngx_emp_server_body_grow_step()
@@ -876,7 +879,9 @@ ngx_int_t ngx_emp_server_check_appid_ip(const char *app_id, const char *ip)
 	ngx_uint_t i,j;
 	
 	printf("check appid %s ip %s\n", app_id, ip);
-	
+	if(!proxy_config_process->appid_ip_maps) {
+		return 1;
+	}
 	appid_ip = proxy_config_process->appid_ip_maps->elts;
 	for(i = 0; i< proxy_config_process->appid_ip_maps->nelts; i++) {
 		if(strcmp(appid_ip[i].app_id, app_id) == 0) {
@@ -928,8 +933,9 @@ ngx_int_t ngx_emp_server_log_body(char *body, int body_length, ngx_emp_api_log_b
 	//	evhttp_add_header(ctx->req->output_headers, "Content-Type", (const char*)log_body_t->content_type.data);
 	event_base_dispatch(ctx->base); 
 	//printf("check result is %d \n", ctx->ok);
+	int ret = ctx->ok;
 	context_free(ctx); 
-	return ctx->ok;	
+	return ret;	
 }
 
 
